@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AssessmentStatus {
+  IN_PROGRESS
+  COMPLETED
+  REVIEWED
+  ABANDONED
+}
+
+enum QuestionType {
+  SCALE
+  MULTIPLE_CHOICE
+  BOOLEAN
+  TEXT
+}
+
+enum RiskLevel {
+  NONE
+  LOW
+  MODERATE
+  HIGH
+  URGENT
+}
+
+enum MoodLevel {
+  VERY_LOW
+  LOW
+  NEUTRAL
+  GOOD
+  VERY_GOOD
+}
+
+model User {
+  id         String       @id @default(cuid())
+  email      String       @unique
+  name       String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  assessments Assessment[]
+  moodLogs   MoodLog[]
+}
+
+model Assessment {
+  id           String            @id @default(cuid())
+  userId       String?
+  user         User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status       AssessmentStatus  @default(IN_PROGRESS)
+  score        Int?
+  riskLevel    RiskLevel?
+  summary      String?
+  startedAt    DateTime          @default(now())
+  completedAt  DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  responses    Response[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Question {
+  id         String       @id @default(cuid())
+  prompt     String
+  category   String
+  order      Int          @default(0)
+  type       QuestionType @default(MULTIPLE_CHOICE)
+  isActive   Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  responses  Response[]
+
+  @@index([category])
+  @@index([isActive, order])
+}
+
+model Response {
+  id            String      @id @default(cuid())
+  assessmentId  String
+  questionId    String
+  answerText    String?
+  answerNumber  Float?
+  answerBoolean Boolean?
+  selectedOption String?
+  respondedAt   DateTime    @default(now())
+  assessment    Assessment  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  question      Question    @relation(fields: [questionId], references: [id], onDelete: Restrict)
+
+  @@unique([assessmentId, questionId])
+  @@index([assessmentId])
+  @@index([questionId])
+}
+
+model MoodLog {
+  id         String     @id @default(cuid())
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mood       MoodLevel
+  note       String?
+  loggedAt   DateTime   @default(now())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([userId, loggedAt])
+  @@index([mood])
+}
