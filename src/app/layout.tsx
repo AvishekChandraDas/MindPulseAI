@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { fontSans } from "@/lib/fonts";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,8 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${fontSans.variable} min-h-full font-sans`}>
+        {children}
+      </body>
     </html>
   );
 }
