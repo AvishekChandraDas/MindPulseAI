@@ -1,11 +1,20 @@
+"use client";
+
 import Link from "next/link";
+
+import { usePathname } from "next/navigation";
 
 import { Container } from "@/components/ui/container";
 import { Small, Text } from "@/components/ui/typography";
 import { footerNavItems } from "@/constants/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
   const year = new Date().getFullYear();
+
+  if (pathname.startsWith("/dashboard")) {
+    return null;
+  }
 
   return (
     <footer className="border-t border-border/80 bg-card/60">

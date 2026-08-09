@@ -13,6 +13,10 @@ export function Navbar() {
   const router = useRouter();
   const isHome = pathname === "/";
 
+  if (pathname.startsWith("/dashboard")) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/90 backdrop-blur">
       <a
