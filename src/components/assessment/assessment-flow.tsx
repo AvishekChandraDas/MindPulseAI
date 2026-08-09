@@ -3,9 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { FadeIn } from "@/components/motion";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldHint, Label } from "@/components/ui/input";
 import { Small, Text } from "@/components/ui/typography";
+
+import { encodeAssessmentAnswers } from "@/lib/assessment/encoding";
 
 import {
   AssessmentQuestion,
@@ -166,6 +169,11 @@ export function AssessmentFlow() {
     setAnswers({});
     setAttemptedStep({});
     goToHash("#consent");
+  };
+
+  const handleViewResults = () => {
+    const payload = encodeAssessmentAnswers(answers);
+    window.location.href = `/dashboard/assessment/result?answers=${encodeURIComponent(payload)}`;
   };
 
   return (
@@ -436,6 +444,11 @@ export function AssessmentFlow() {
             previousLabel="Back to GAD-7"
             nextLabel="Start over"
           />
+          <div className="flex justify-end">
+            <Button type="button" onClick={handleViewResults}>
+              View result page
+            </Button>
+          </div>
         </FadeIn>
       ) : null}
     </div>
