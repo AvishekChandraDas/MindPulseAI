@@ -66,6 +66,11 @@ export const dashboardNavItems: DashboardNavItem[] = [
 
 export const quickActions: QuickAction[] = [
   {
+    label: "Start assessment",
+    description: "Open the educational questionnaire and continue the flow.",
+    href: "/dashboard/assessment#consent",
+  },
+  {
     label: "Review summary",
     description: "Jump straight to the latest assessment signals.",
     href: "#assessments",

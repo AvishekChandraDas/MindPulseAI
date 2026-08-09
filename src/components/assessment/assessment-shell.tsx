@@ -3,29 +3,32 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Small, Text } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
-import { AssessmentWorkspace } from "@/components/assessment";
-import { dashboardNavItems } from "./mock-data";
+import { ProgressIndicator } from "./progress-indicator";
+import { assessmentSteps, consentSummary } from "./mock-data";
 
-type DashboardShellProps = {
+type AssessmentWorkspaceProps = {
   children: ReactNode;
 };
 
-export function DashboardShell({ children }: DashboardShellProps) {
-  const pathname = usePathname();
+const stepIndexFromHash = (hash: string) =>
+  Math.max(
+    0,
+    assessmentSteps.findIndex((step) => step.href === hash),
+  );
+
+export function AssessmentWorkspace({ children }: AssessmentWorkspaceProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeHash, setActiveHash] = useState("#overview");
+  const [activeHash, setActiveHash] = useState("#consent");
 
   useEffect(() => {
     const updateHash = () => {
-      setActiveHash(window.location.hash || "#overview");
+      setActiveHash(window.location.hash || "#consent");
     };
 
     updateHash();
@@ -54,22 +57,23 @@ export function DashboardShell({ children }: DashboardShellProps) {
     };
   }, [mobileOpen]);
 
-  if (pathname.startsWith("/dashboard/assessment")) {
-    return <AssessmentWorkspace>{children}</AssessmentWorkspace>;
-  }
+  const currentIndex = Math.max(stepIndexFromHash(activeHash), 0);
 
   return (
     <div className="min-h-screen bg-muted/20 text-foreground">
       <div className="mx-auto grid min-h-screen max-w-[1600px] lg:grid-cols-[18rem_1fr]">
         <aside className="hidden border-r border-border/80 bg-card/60 lg:block">
-          <DashboardSidebar
+          <AssessmentSidebar
             activeHash={activeHash}
             onNavigate={() => undefined}
           />
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <DashboardTopbar onMenuClick={() => setMobileOpen(true)} />
+          <AssessmentTopbar
+            onMenuClick={() => setMobileOpen(true)}
+            currentIndex={currentIndex}
+          />
           <main id="dashboard-content" className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
             {children}
           </main>
@@ -81,11 +85,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
           <button
             type="button"
             className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm"
-            aria-label="Close navigation overlay"
+            aria-label="Close assessment navigation"
             onClick={() => setMobileOpen(false)}
           />
           <aside className="absolute inset-y-0 left-0 w-[18rem] border-r border-border/80 bg-background shadow-2xl shadow-slate-950/20">
-            <DashboardSidebar
+            <AssessmentSidebar
               activeHash={activeHash}
               mobile
               onNavigate={() => setMobileOpen(false)}
@@ -97,17 +101,13 @@ export function DashboardShell({ children }: DashboardShellProps) {
   );
 }
 
-type DashboardSidebarProps = {
+type AssessmentSidebarProps = {
   activeHash: string;
   mobile?: boolean;
   onNavigate: () => void;
 };
 
-export function DashboardSidebar({
-  activeHash,
-  mobile = false,
-  onNavigate,
-}: DashboardSidebarProps) {
+function AssessmentSidebar({ activeHash, mobile = false, onNavigate }: AssessmentSidebarProps) {
   return (
     <div
       className={cn(
@@ -125,7 +125,7 @@ export function DashboardSidebar({
               MindPulse AI
             </span>
             <span className="block text-xs text-muted-foreground">
-              Dashboard workspace
+              Assessment workspace
             </span>
           </span>
         </Link>
@@ -133,24 +133,24 @@ export function DashboardSidebar({
         <Card className="border-primary/15 bg-primary/5">
           <CardContent className="space-y-2 p-4">
             <Small className="uppercase tracking-[0.18em] text-primary">
-              Workspace status
+              Educational consent
             </Small>
             <Text className="font-medium text-foreground">
-              Calm, mock-driven dashboard shell
+              {consentSummary.title}
             </Text>
-            <Small>Built for responsive navigation and fast scanning.</Small>
+            <Small>{consentSummary.description}</Small>
           </CardContent>
         </Card>
       </div>
 
-      <nav aria-label="Dashboard sections" className="space-y-2">
-        {dashboardNavItems.map((item) => {
-          const isActive = activeHash === item.href;
+      <nav aria-label="Assessment steps" className="space-y-2">
+        {assessmentSteps.map((step) => {
+          const isActive = activeHash === step.href;
 
           return (
             <Link
-              key={item.href}
-              href={item.href}
+              key={step.href}
+              href={step.href}
               aria-current={isActive ? "location" : undefined}
               onClick={onNavigate}
               className={cn(
@@ -162,9 +162,9 @@ export function DashboardSidebar({
             >
               <span className="mt-1 h-2.5 w-2.5 rounded-full bg-current opacity-70" />
               <span className="space-y-0.5">
-                <span className="block text-sm font-medium">{item.label}</span>
+                <span className="block text-sm font-medium">{step.label}</span>
                 <span className="block text-xs text-muted-foreground">
-                  {item.description}
+                  {step.description}
                 </span>
               </span>
             </Link>
@@ -175,72 +175,67 @@ export function DashboardSidebar({
       <Card className="mt-auto border-border/80">
         <CardContent className="space-y-3 p-4">
           <Small className="uppercase tracking-[0.18em] text-primary">
-              Today&apos;s focus
+            Private draft
           </Small>
-          <Text className="font-medium">Three reminders due</Text>
-          <Small>Keep the experience calm and easy to revisit later.</Small>
+          <Text className="font-medium">Saved only in local state</Text>
+          <Small>No database writes. No API calls. No scoring.</Small>
         </CardContent>
       </Card>
     </div>
   );
 }
 
-type DashboardTopbarProps = {
+type AssessmentTopbarProps = {
   onMenuClick: () => void;
+  currentIndex: number;
 };
 
-export function DashboardTopbar({ onMenuClick }: DashboardTopbarProps) {
-  const today = new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  }).format(new Date());
-
+function AssessmentTopbar({ onMenuClick, currentIndex }: AssessmentTopbarProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-border/80 bg-background/90 backdrop-blur">
-      <div className="flex items-center gap-3 px-4 py-4 sm:px-6 lg:px-8">
-        <Button
-          variant="outline"
-          size="sm"
-          className="lg:hidden"
-          onClick={onMenuClick}
-        >
-          Menu
-        </Button>
-
-        <div className="min-w-0 flex-1 space-y-1">
-          <Small className="uppercase tracking-[0.18em] text-primary">
-            Dashboard
-          </Small>
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-lg font-semibold tracking-tight sm:text-xl">
-              Welcome back, Sofia
-            </h1>
-            <span className="rounded-full border border-border bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
-              {today}
-            </span>
-          </div>
-        </div>
-
-        <div className="hidden flex-1 justify-end md:flex">
-          <Input
-            aria-label="Search dashboard"
-            placeholder="Search assessments, reminders, or activity"
-            className="max-w-md"
-          />
-        </div>
-
+      <div className="space-y-4 px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
-          <Link
-            href="#reminders"
-            className="hidden rounded-md border border-border bg-transparent px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:inline-flex"
+          <Button
+            variant="outline"
+            size="sm"
+            className="lg:hidden"
+            onClick={onMenuClick}
           >
-            View reminders
-          </Link>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-            SA
+            Menu
+          </Button>
+
+          <div className="min-w-0 flex-1 space-y-1">
+            <Small className="uppercase tracking-[0.18em] text-primary">
+              Assessment engine
+            </Small>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-lg font-semibold tracking-tight sm:text-xl">
+                Educational consent and screening
+              </h1>
+              <span className="rounded-full border border-border bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
+                Local draft only
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard"
+              className="hidden rounded-md border border-border bg-transparent px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:inline-flex"
+            >
+              Back to dashboard
+            </Link>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+              AS
+            </div>
           </div>
         </div>
+
+        <ProgressIndicator
+          currentStep={currentIndex + 1}
+          totalSteps={assessmentSteps.length}
+          label={assessmentSteps[currentIndex]?.label ?? "Consent"}
+        />
       </div>
     </header>
   );
