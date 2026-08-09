@@ -5,7 +5,7 @@ import { AssessmentFlow } from "@/components/assessment";
 export const metadata: Metadata = {
   title: "Assessment Engine",
   description:
-    "Educational multi-step PHQ-9 and GAD-7 assessment flow with consent, local state only, and confirmation.",
+    "Educational multi-step PHQ-9 and GAD-7 assessment flow with consent, persistence, and confirmation.",
 };
 
 export default function AssessmentPage() {

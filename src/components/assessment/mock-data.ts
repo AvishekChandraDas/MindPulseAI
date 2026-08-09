@@ -56,7 +56,7 @@ export const responseOptions: Option[] = [
 export const consentHighlights = [
   "This is an educational screening experience, not a diagnosis.",
   "You can move back and review answers before confirming.",
-  "Nothing is saved to a database or sent to an API.",
+  "Completed assessments are saved to your account when you confirm.",
 ];
 
 export const phq9Questions: AssessmentQuestion[] = [

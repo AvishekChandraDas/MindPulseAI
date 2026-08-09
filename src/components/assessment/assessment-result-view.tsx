@@ -6,26 +6,43 @@ import { Small, Text } from "@/components/ui/typography";
 import type { ScoreResult } from "@/lib/assessment/scoring";
 
 type AssessmentResultViewProps = {
+  assessmentId: string;
+  savedMessage: string;
+  completedAt: string;
+  responseCount: number;
   phq9: ScoreResult;
   gad7: ScoreResult;
 };
 
-export function AssessmentResultView({ phq9, gad7 }: AssessmentResultViewProps) {
+export function AssessmentResultView({
+  assessmentId,
+  savedMessage,
+  completedAt,
+  responseCount,
+  phq9,
+  gad7,
+}: AssessmentResultViewProps) {
   return (
     <div className="space-y-8">
       <Card className="border-primary/15 bg-primary/5">
         <CardHeader>
           <Small className="uppercase tracking-[0.18em] text-primary">
-            Result page
+            Assessment saved
           </Small>
           <CardTitle className="text-2xl sm:text-3xl">
-            Your educational screening results are ready.
+            Your assessment was saved successfully.
           </CardTitle>
           <CardDescription>
-            These results are generated locally from the responses you completed in this session.
+            {savedMessage}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <ResultCard label="Assessment ID" value={assessmentId} />
+            <ResultCard label="Completed" value={completedAt} />
+            <ResultCard label="Responses saved" value={`${responseCount}`} />
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <ResultCard label="PHQ-9 score" result={phq9} />
             <ResultCard label="GAD-7 score" result={gad7} />
@@ -61,6 +78,20 @@ export function AssessmentResultView({ phq9, gad7 }: AssessmentResultViewProps) 
         </Card>
       </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Educational disclaimer</CardTitle>
+          <CardDescription>
+            This record is meant for screening and reflection, not diagnosis or emergency care.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Text className="text-muted-foreground">
+            If you are in immediate danger or thinking about harming yourself, contact local emergency services or a crisis line right away.
+          </Text>
+        </CardContent>
+      </Card>
+
       <div className="flex flex-wrap gap-3">
         <Link
           href="/dashboard/assessment"
@@ -79,12 +110,26 @@ export function AssessmentResultView({ phq9, gad7 }: AssessmentResultViewProps) 
   );
 }
 
-function ResultCard({ label, result }: { label: string; result: ScoreResult }) {
+function ResultCard({
+  label,
+  value,
+  result,
+}: {
+  label: string;
+  value?: string;
+  result?: ScoreResult;
+}) {
   return (
     <div className="rounded-2xl border border-border bg-background p-4">
       <Small className="uppercase tracking-[0.18em] text-primary">{label}</Small>
-      <div className="mt-2 text-3xl font-semibold tracking-tight">{result.score}</div>
-      <Text className="mt-1 text-muted-foreground">{result.band.label}</Text>
+      {result ? (
+        <>
+          <div className="mt-2 text-3xl font-semibold tracking-tight">{result.score}</div>
+          <Text className="mt-1 text-muted-foreground">{result.band.label}</Text>
+        </>
+      ) : (
+        <Text className="mt-2 break-all text-muted-foreground">{value}</Text>
+      )}
     </div>
   );
 }

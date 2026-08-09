@@ -52,6 +52,10 @@ model Assessment {
   user         User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   status       AssessmentStatus  @default(IN_PROGRESS)
   score        Int?
+  phq9Score    Int?
+  gad7Score    Int?
+  phq9Severity String?
+  gad7Severity String?
   riskLevel    RiskLevel?
   summary      String?
   startedAt    DateTime          @default(now())

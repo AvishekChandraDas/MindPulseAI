@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FieldHint, Label } from "@/components/ui/input";
 import { Small, Text } from "@/components/ui/typography";
 
-import { encodeAssessmentAnswers } from "@/lib/assessment/encoding";
+import { saveAssessmentAction } from "@/server/actions/assessment";
 
 import {
   AssessmentQuestion,
@@ -77,6 +78,8 @@ function QuestionGroup({
 }
 
 export function AssessmentFlow() {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [stepHash, setStepHash] = useState(() => {
     if (typeof window === "undefined") {
       return "#consent";
@@ -87,6 +90,7 @@ export function AssessmentFlow() {
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [answers, setAnswers] = useState<AssessmentAnswers>({});
   const [attemptedStep, setAttemptedStep] = useState<AssessmentAnswers>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const currentStepIndex = useMemo(() => getStepIndexFromHash(stepHash), [stepHash]);
@@ -168,12 +172,26 @@ export function AssessmentFlow() {
     setConsentAccepted(false);
     setAnswers({});
     setAttemptedStep({});
+    setSubmitError(null);
     goToHash("#consent");
   };
 
-  const handleViewResults = () => {
-    const payload = encodeAssessmentAnswers(answers);
-    window.location.href = `/dashboard/assessment/result?answers=${encodeURIComponent(payload)}`;
+  const handleSaveAssessment = () => {
+    setSubmitError(null);
+
+    startTransition(async () => {
+      const response = await saveAssessmentAction({
+        consentAccepted,
+        answers,
+      });
+
+      if (!response.ok) {
+        setSubmitError(response.error);
+        return;
+      }
+
+      router.push(`/dashboard/assessment/result?assessmentId=${response.assessmentId}&saved=1`);
+    });
   };
 
   return (
@@ -297,11 +315,10 @@ export function AssessmentFlow() {
               </div>
               <div className="rounded-2xl border border-border bg-background p-4">
                 <Small className="uppercase tracking-[0.18em] text-primary">
-                  Local storage
+                  Saved progress
                 </Small>
                 <Text className="mt-2 text-muted-foreground">
-                  Answers live only in component state while you move through the
-                  questionnaire.
+                  Answers stay in component state while you review the questionnaire and are saved only after confirmation.
                 </Text>
               </div>
             </CardContent>
@@ -383,7 +400,7 @@ export function AssessmentFlow() {
                   Your responses are ready for review.
                 </CardTitle>
                 <CardDescription>
-                  No scores are calculated and nothing is stored outside this session.
+                    Your answers will be saved with your account and scored locally on the server.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -407,6 +424,11 @@ export function AssessmentFlow() {
                     You can go back to adjust answers or restart the assessment.
                   </Text>
                 </div>
+                {submitError ? (
+                  <p className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm font-medium text-destructive">
+                    {submitError}
+                  </p>
+                ) : null}
               </CardContent>
             </Card>
 
@@ -414,7 +436,7 @@ export function AssessmentFlow() {
               <CardHeader>
                 <CardTitle>Answer snapshot</CardTitle>
                 <CardDescription>
-                  A local-only summary of the completed draft.
+                  A session summary that will be persisted after you save.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -445,8 +467,8 @@ export function AssessmentFlow() {
             nextLabel="Start over"
           />
           <div className="flex justify-end">
-            <Button type="button" onClick={handleViewResults}>
-              View result page
+            <Button type="button" onClick={handleSaveAssessment} isLoading={isPending}>
+              Save and view results
             </Button>
           </div>
         </FadeIn>
