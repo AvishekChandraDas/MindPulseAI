@@ -13,7 +13,6 @@ import {
 import { cn } from "@/lib/utils";
 
 import {
-  dashboardMetrics,
   moodTrend,
   quickActions,
   recentActivity,
@@ -130,43 +129,116 @@ export function QuickActions() {
   );
 }
 
-export function AssessmentSummaryCards() {
+export function AssessmentSummaryCards({
+  assessments,
+}: {
+  assessments: Array<{
+    id: string;
+    status: string;
+    score: number | null;
+    phq9Score: number | null;
+    gad7Score: number | null;
+    phq9Severity: string | null;
+    gad7Severity: string | null;
+    riskLevel: string | null;
+    summary: string | null;
+    completedAt: Date | null;
+    createdAt: Date;
+  }>;
+}) {
+  const completedAssessments = assessments.filter(
+    (assessment) => assessment.status === "COMPLETED",
+  );
+
+  const latestAssessment = completedAssessments[0];
+
+  const metrics = [
+    {
+      label: "Assessments completed",
+      value: String(completedAssessments.length),
+      note: "From your assessment history",
+      tone: "primary" as const,
+    },
+    {
+      label: "Latest PHQ-9 score",
+      value: latestAssessment?.phq9Score != null
+        ? String(latestAssessment.phq9Score)
+        : "—",
+      note: latestAssessment?.phq9Severity ?? "No completed assessment",
+      tone: "info" as const,
+    },
+    {
+      label: "Latest GAD-7 score",
+      value: latestAssessment?.gad7Score != null
+        ? String(latestAssessment.gad7Score)
+        : "—",
+      note: latestAssessment?.gad7Severity ?? "No completed assessment",
+      tone: "success" as const,
+    },
+    {
+      label: "Risk level",
+      value: latestAssessment?.riskLevel ?? "—",
+      note: "Based on latest assessment",
+      tone: "warning" as const,
+    },
+  ];
+
   return (
     <section aria-labelledby="assessments-heading" className="space-y-4">
       <SectionHeading
         id="assessments-heading"
         eyebrow="Assessment summary"
-        title="What the current screening picture looks like."
-        description="These cards surface the core metrics that users tend to check first."
+        title="What your latest screening picture looks like."
+        description="These cards show information from your saved assessment history."
       />
-      <StaggerList className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {dashboardMetrics.map((metric) => (
-          <StaggerItem key={metric.label}>
-            <Card className="h-full">
-              <CardContent className="space-y-4 p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div className={cn(
-                    "inline-flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold",
-                    metric.tone === "primary" && "bg-primary/10 text-primary",
-                    metric.tone === "success" && "bg-success/10 text-success",
-                    metric.tone === "warning" && "bg-warning/10 text-warning",
-                    metric.tone === "info" && "bg-info/10 text-info",
-                  )}>
-                    {metric.value.slice(0, 1)}
+
+      {completedAssessments.length === 0 ? (
+        <Card>
+          <CardContent className="p-6">
+            <Text className="text-muted-foreground">
+              You have not completed an assessment yet.
+            </Text>
+          </CardContent>
+        </Card>
+      ) : (
+        <StaggerList className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {metrics.map((metric) => (
+            <StaggerItem key={metric.label}>
+              <Card className="h-full">
+                <CardContent className="space-y-4 p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div
+                      className={cn(
+                        "inline-flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold",
+                        metric.tone === "primary" &&
+                          "bg-primary/10 text-primary",
+                        metric.tone === "success" &&
+                          "bg-success/10 text-success",
+                        metric.tone === "warning" &&
+                          "bg-warning/10 text-warning",
+                        metric.tone === "info" && "bg-info/10 text-info",
+                      )}
+                    >
+                      {metric.value.slice(0, 1)}
+                    </div>
+
+                    <Small>{metric.note}</Small>
                   </div>
-                  <Small>{metric.note}</Small>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-3xl font-semibold tracking-tight">
-                    {metric.value}
+
+                  <div className="space-y-1">
+                    <div className="text-3xl font-semibold tracking-tight">
+                      {metric.value}
+                    </div>
+                    <CardDescription className="text-sm">
+                      {metric.label}
+                    </CardDescription>
                   </div>
-                  <CardDescription className="text-sm">{metric.label}</CardDescription>
-                </div>
-              </CardContent>
-            </Card>
-          </StaggerItem>
-        ))}
-      </StaggerList>
+                </CardContent>
+              </Card>
+            </StaggerItem>
+          ))}
+        </StaggerList>
+      )}
     </section>
   );
 }

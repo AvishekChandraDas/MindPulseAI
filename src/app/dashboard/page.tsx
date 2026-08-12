@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { getDashboardData } from "@/server/queries/dashboard";
+
 import {
   AssessmentSummaryCards,
   DashboardWelcomeCard,
@@ -15,7 +17,8 @@ export const metadata: Metadata = {
     "Static dashboard layout for MindPulse AI with sidebar navigation, summary cards, mood insights, activity, and reminders.",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { assessments } = await getDashboardData();
   return (
     <div className="space-y-10">
       <section id="overview" className="scroll-mt-28 space-y-6">
@@ -24,7 +27,7 @@ export default function DashboardPage() {
       </section>
 
       <section id="assessments" className="scroll-mt-28 space-y-6">
-        <AssessmentSummaryCards />
+        <AssessmentSummaryCards assessments={assessments} />
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
