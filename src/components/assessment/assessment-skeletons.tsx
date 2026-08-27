@@ -23,7 +23,10 @@ export function AssessmentEngineSkeleton() {
                   <div className="h-3 w-full rounded bg-muted animate-pulse" />
                   <div className="grid gap-3 sm:grid-cols-2">
                     {Array.from({ length: 4 }).map((__, optionIndex) => (
-                      <div key={optionIndex} className="h-16 rounded-2xl bg-muted animate-pulse" />
+                      <div
+                        key={optionIndex}
+                        className="h-16 rounded-2xl bg-muted animate-pulse"
+                      />
                     ))}
                   </div>
                 </div>

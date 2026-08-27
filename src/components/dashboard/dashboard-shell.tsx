@@ -70,7 +70,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
         <div className="flex min-w-0 flex-1 flex-col">
           <DashboardTopbar onMenuClick={() => setMobileOpen(true)} />
-          <main id="dashboard-content" className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <main
+            id="dashboard-content"
+            className="flex-1 px-4 py-6 sm:px-6 lg:px-8"
+          >
             {children}
           </main>
         </div>
@@ -175,7 +178,7 @@ export function DashboardSidebar({
       <Card className="mt-auto border-border/80">
         <CardContent className="space-y-3 p-4">
           <Small className="uppercase tracking-[0.18em] text-primary">
-              Today&apos;s focus
+            Today&apos;s focus
           </Small>
           <Text className="font-medium">Three reminders due</Text>
           <Small>Keep the experience calm and easy to revisit later.</Small>

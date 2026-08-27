@@ -22,7 +22,7 @@ export function LandingHeroActions() {
     setIsStarting(true);
     timeoutRef.current = window.setTimeout(() => {
       startTransition(() => {
-        router.push("/contact");
+        router.push("/dashboard/assessment");
       });
     }, 350);
   }
@@ -30,13 +30,13 @@ export function LandingHeroActions() {
   return (
     <div className="flex flex-wrap gap-3">
       <Button size="lg" isLoading={isStarting} onClick={handleStart}>
-        Contact us
+        Start your check-in
       </Button>
       <a
-        href="#features"
+        href="#how-it-works"
         className="inline-flex h-11 items-center justify-center rounded-md border border-border bg-transparent px-6 text-sm font-medium text-foreground transition-colors hover:bg-muted"
       >
-        Explore features
+        See how it works
       </a>
     </div>
   );

@@ -66,7 +66,9 @@ export default function AboutPage() {
                   <CardTitle>{value.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Text className="text-muted-foreground">{value.description}</Text>
+                  <Text className="text-muted-foreground">
+                    {value.description}
+                  </Text>
                 </CardContent>
               </Card>
             ))}
@@ -82,13 +84,15 @@ export default function AboutPage() {
                 <Small className="uppercase tracking-[0.18em] text-primary">
                   Mission
                 </Small>
-                <CardTitle>Make screening easier to understand and act on.</CardTitle>
+                <CardTitle>
+                  Make screening easier to understand and act on.
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Text className="text-muted-foreground">
                   Placeholder mission copy. The aim is to present mental
-                  wellness information in a way that is supportive, concise,
-                  and easier to share with trusted professionals.
+                  wellness information in a way that is supportive, concise, and
+                  easier to share with trusted professionals.
                 </Text>
                 <Text className="text-muted-foreground">
                   A second paragraph can later cover product philosophy,

@@ -1,15 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { saveMood } from "@/server/actions/mood";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  H3,
-  Small,
-  Text,
-} from "@/components/ui";
+import { Button, Card, CardContent, H3, Small, Text } from "@/components/ui";
 
 const moodOptions = [
   {
@@ -45,6 +39,42 @@ export function MoodTracker() {
   >(null);
 
   const [note, setNote] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState<{
+    tone: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  const handleSave = async () => {
+    if (!selectedMood) {
+      return;
+    }
+
+    setIsSaving(true);
+    setMessage(null);
+
+    try {
+      const result = await saveMood({
+        mood: selectedMood,
+        note,
+      });
+
+      if (result.success) {
+        setMessage({ tone: "success", text: "Your mood has been saved." });
+        setSelectedMood(null);
+        setNote("");
+      } else {
+        setMessage({ tone: "error", text: result.error });
+      }
+    } catch {
+      setMessage({
+        tone: "error",
+        text: "Unable to save your mood. Please try again.",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <Card>
@@ -54,9 +84,7 @@ export function MoodTracker() {
             Mood tracker
           </Small>
 
-          <H3 className="text-2xl">
-            How are you feeling today?
-          </H3>
+          <H3 className="text-2xl">How are you feeling today?</H3>
 
           <Text className="text-muted-foreground">
             Choose the mood that best describes how you feel right now.
@@ -78,6 +106,7 @@ export function MoodTracker() {
                 role="radio"
                 aria-checked={isSelected}
                 onClick={() => setSelectedMood(option.value)}
+                disabled={isSaving}
                 className={`rounded-2xl border p-4 text-center transition-all ${
                   isSelected
                     ? "border-primary bg-primary/10 shadow-sm"
@@ -97,10 +126,7 @@ export function MoodTracker() {
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="mood-note"
-            className="text-sm font-medium"
-          >
+          <label htmlFor="mood-note" className="text-sm font-medium">
             Note <span className="text-muted-foreground">(optional)</span>
           </label>
 
@@ -110,21 +136,33 @@ export function MoodTracker() {
             onChange={(event) => setNote(event.target.value)}
             maxLength={500}
             rows={4}
+            disabled={isSaving}
+            aria-describedby="mood-note-count"
             placeholder="How are you feeling? What happened today?"
             className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
           />
 
-          <div className="flex justify-end">
+          <div id="mood-note-count" className="flex justify-end">
             <Small>{note.length}/500</Small>
           </div>
         </div>
-
+        {message ? (
+          <Text
+            className={
+              message.tone === "success" ? "text-success" : "text-destructive"
+            }
+            role="status"
+          >
+            {message.text}
+          </Text>
+        ) : null}
         <Button
           type="button"
-          disabled={!selectedMood}
+          disabled={!selectedMood || isSaving}
+          onClick={handleSave}
           className="w-full sm:w-auto"
         >
-          Save mood
+          {isSaving ? "Saving..." : "Save mood"}
         </Button>
       </CardContent>
     </Card>

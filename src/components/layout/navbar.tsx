@@ -52,7 +52,10 @@ export function Navbar() {
           </div>
 
           <div className="flex flex-col gap-3 border-t border-border/70 pt-3 sm:flex-row sm:items-center sm:justify-between">
-            <nav aria-label="Primary navigation" className="flex flex-wrap gap-2">
+            <nav
+              aria-label="Primary navigation"
+              className="flex flex-wrap gap-2"
+            >
               {mainNavItems.map((item) => {
                 const isActive = pathname === item.href;
 
@@ -74,7 +77,10 @@ export function Navbar() {
               })}
             </nav>
 
-            <nav aria-label="Section navigation" className="flex flex-wrap gap-2">
+            <nav
+              aria-label="Section navigation"
+              className="flex flex-wrap gap-2"
+            >
               {isHome ? (
                 <>
                   <Link

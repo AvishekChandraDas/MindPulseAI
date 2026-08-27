@@ -5,7 +5,6 @@ import {
   FinalCtaSection,
   LandingHero,
   HowItWorksSection,
-  TestimonialsSection,
 } from "@/components/marketing";
 
 export const metadata = {
@@ -21,7 +20,6 @@ export default function HomePage() {
       <FeatureSection />
       <HowItWorksSection />
       <BenefitsSection />
-      <TestimonialsSection />
       <FaqSection />
       <FinalCtaSection />
     </>

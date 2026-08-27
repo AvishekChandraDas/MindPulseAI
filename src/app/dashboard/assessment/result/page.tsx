@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 
 import { AssessmentResultView } from "@/components/assessment/assessment-result-view";
-import { gad7Questions, phq9Questions } from "@/components/assessment/mock-data";
+import {
+  gad7Questions,
+  phq9Questions,
+} from "@/components/assessment/mock-data";
 import {
   calculateGad7Score,
   calculatePhq9Score,
@@ -72,24 +75,32 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   if (!assessment) {
     return (
       <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6 text-sm text-destructive">
-        We could not find that saved assessment. It may belong to another account or was not saved.
+        We could not find that saved assessment. It may belong to another
+        account or was not saved.
       </div>
     );
   }
 
-  const answerMap = assessment.responses.reduce<Record<string, string>>((accumulator, response) => {
-    accumulator[response.questionId] = response.selectedOption ?? String(response.answerNumber ?? "0");
-    return accumulator;
-  }, {});
+  const answerMap = assessment.responses.reduce<Record<string, string>>(
+    (accumulator, response) => {
+      accumulator[response.questionId] =
+        response.selectedOption ?? String(response.answerNumber ?? "0");
+      return accumulator;
+    },
+    {},
+  );
 
   const phq9 =
     assessment.phq9Score !== null && assessment.phq9Score !== undefined
       ? {
           score: assessment.phq9Score,
           band: {
-            label: assessment.phq9Severity ?? interpretPhq9Score(assessment.phq9Score).label,
+            label:
+              assessment.phq9Severity ??
+              interpretPhq9Score(assessment.phq9Score).label,
             description: interpretPhq9Score(assessment.phq9Score).description,
-            recommendation: interpretPhq9Score(assessment.phq9Score).recommendation,
+            recommendation: interpretPhq9Score(assessment.phq9Score)
+              .recommendation,
           },
         }
       : calculatePhq9Score(answerMap, phq9Ids);
@@ -99,14 +110,18 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
       ? {
           score: assessment.gad7Score,
           band: {
-            label: assessment.gad7Severity ?? interpretGad7Score(assessment.gad7Score).label,
+            label:
+              assessment.gad7Severity ??
+              interpretGad7Score(assessment.gad7Score).label,
             description: interpretGad7Score(assessment.gad7Score).description,
-            recommendation: interpretGad7Score(assessment.gad7Score).recommendation,
+            recommendation: interpretGad7Score(assessment.gad7Score)
+              .recommendation,
           },
         }
       : calculateGad7Score(answerMap, gad7Ids);
 
-  const completedAt = assessment.completedAt?.toISOString() ?? assessment.updatedAt.toISOString();
+  const completedAt =
+    assessment.completedAt?.toISOString() ?? assessment.updatedAt.toISOString();
 
   return (
     <AssessmentResultView

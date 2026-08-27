@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 
 import { getDashboardData } from "@/server/queries/dashboard";
+import { getMoodLogs } from "@/server/queries/mood";
+import { MoodHistory, MoodTracker } from "@/components/mood";
 
 import {
   AssessmentSummaryCards,
   DashboardWelcomeCard,
-  MoodSummaryCard,
   QuickActions,
   RecentActivity,
   UpcomingReminders,
@@ -18,7 +19,10 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const { assessments } = await getDashboardData();
+  const [{ assessments }, moodLogs] = await Promise.all([
+    getDashboardData(),
+    getMoodLogs(),
+  ]);
   return (
     <div className="space-y-10">
       <section id="overview" className="scroll-mt-28 space-y-6">
@@ -31,7 +35,14 @@ export default async function DashboardPage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
-        <MoodSummaryCard />
+        <section
+          id="mood"
+          aria-label="Mood check-in"
+          className="space-y-6 scroll-mt-28"
+        >
+          <MoodTracker />
+          <MoodHistory moodLogs={moodLogs} />
+        </section>
         <div className="space-y-6">
           <RecentActivity />
           <UpcomingReminders />

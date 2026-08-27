@@ -74,7 +74,10 @@ export function AssessmentWorkspace({ children }: AssessmentWorkspaceProps) {
             onMenuClick={() => setMobileOpen(true)}
             currentIndex={currentIndex}
           />
-          <main id="dashboard-content" className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <main
+            id="dashboard-content"
+            className="flex-1 px-4 py-6 sm:px-6 lg:px-8"
+          >
             {children}
           </main>
         </div>
@@ -107,7 +110,11 @@ type AssessmentSidebarProps = {
   onNavigate: () => void;
 };
 
-function AssessmentSidebar({ activeHash, mobile = false, onNavigate }: AssessmentSidebarProps) {
+function AssessmentSidebar({
+  activeHash,
+  mobile = false,
+  onNavigate,
+}: AssessmentSidebarProps) {
   return (
     <div
       className={cn(
@@ -190,7 +197,10 @@ type AssessmentTopbarProps = {
   currentIndex: number;
 };
 
-function AssessmentTopbar({ onMenuClick, currentIndex }: AssessmentTopbarProps) {
+function AssessmentTopbar({
+  onMenuClick,
+  currentIndex,
+}: AssessmentTopbarProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-border/80 bg-background/90 backdrop-blur">
       <div className="space-y-4 px-4 py-4 sm:px-6 lg:px-8">

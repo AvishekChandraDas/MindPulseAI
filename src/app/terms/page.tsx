@@ -84,8 +84,8 @@ export default function TermsPage() {
                 </CardHeader>
                 <CardContent>
                   <Text className="text-muted-foreground">
-                    Placeholder content for service availability, liability,
-                    and the limits of the screening experience.
+                    Placeholder content for service availability, liability, and
+                    the limits of the screening experience.
                   </Text>
                 </CardContent>
               </Card>

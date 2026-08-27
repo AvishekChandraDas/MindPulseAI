@@ -87,22 +87,26 @@ export const phq9Questions: AssessmentQuestion[] = [
   },
   {
     id: "phq9-6",
-    prompt: "Feeling bad about yourself, or that you are a failure or have let yourself or your family down",
+    prompt:
+      "Feeling bad about yourself, or that you are a failure or have let yourself or your family down",
     detail: "Over the last 2 weeks, how often have you been bothered by this?",
   },
   {
     id: "phq9-7",
-    prompt: "Trouble concentrating on things, such as reading the newspaper or watching television",
+    prompt:
+      "Trouble concentrating on things, such as reading the newspaper or watching television",
     detail: "Over the last 2 weeks, how often have you been bothered by this?",
   },
   {
     id: "phq9-8",
-    prompt: "Moving or speaking so slowly that other people could have noticed? Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual",
+    prompt:
+      "Moving or speaking so slowly that other people could have noticed? Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual",
     detail: "Over the last 2 weeks, how often have you been bothered by this?",
   },
   {
     id: "phq9-9",
-    prompt: "Thoughts that you would be better off dead, or thoughts of hurting yourself in some way",
+    prompt:
+      "Thoughts that you would be better off dead, or thoughts of hurting yourself in some way",
     detail: "Over the last 2 weeks, how often have you been bothered by this?",
   },
 ];

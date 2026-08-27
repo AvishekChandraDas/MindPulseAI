@@ -49,7 +49,10 @@ export function DashboardSidebarSkeleton() {
 
       <div className="space-y-3">
         {Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className="h-16 rounded-2xl bg-muted animate-pulse" />
+          <div
+            key={index}
+            className="h-16 rounded-2xl bg-muted animate-pulse"
+          />
         ))}
       </div>
 
@@ -74,7 +77,10 @@ export function DashboardContentSkeleton() {
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="h-28 rounded-2xl bg-muted animate-pulse" />
+              <div
+                key={index}
+                className="h-28 rounded-2xl bg-muted animate-pulse"
+              />
             ))}
           </div>
         </CardContent>
@@ -96,14 +102,20 @@ export function DashboardContentSkeleton() {
         <Card>
           <CardContent className="space-y-4 p-6">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="h-20 rounded-2xl bg-muted animate-pulse" />
+              <div
+                key={index}
+                className="h-20 rounded-2xl bg-muted animate-pulse"
+              />
             ))}
           </CardContent>
         </Card>
         <Card>
           <CardContent className="space-y-4 p-6">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="h-24 rounded-2xl bg-muted animate-pulse" />
+              <div
+                key={index}
+                className="h-24 rounded-2xl bg-muted animate-pulse"
+              />
             ))}
           </CardContent>
         </Card>

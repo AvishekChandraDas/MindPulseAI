@@ -82,8 +82,13 @@ export function DashboardWelcomeCard() {
               ["9 day", "mood streak"],
               ["3", "reminders pending"],
             ].map(([value, label]) => (
-              <div key={value} className="rounded-2xl border border-border bg-background p-4">
-                <div className="text-2xl font-semibold tracking-tight">{value}</div>
+              <div
+                key={value}
+                className="rounded-2xl border border-border bg-background p-4"
+              >
+                <div className="text-2xl font-semibold tracking-tight">
+                  {value}
+                </div>
                 <Small>{label}</Small>
               </div>
             ))}
@@ -115,7 +120,10 @@ export function QuickActions() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-4">
                   <H3 className="text-lg">{action.label}</H3>
-                  <span aria-hidden className="text-lg transition-transform group-hover:translate-x-0.5">
+                  <span
+                    aria-hidden
+                    className="text-lg transition-transform group-hover:translate-x-0.5"
+                  >
                     →
                   </span>
                 </div>
@@ -161,17 +169,19 @@ export function AssessmentSummaryCards({
     },
     {
       label: "Latest PHQ-9 score",
-      value: latestAssessment?.phq9Score != null
-        ? String(latestAssessment.phq9Score)
-        : "—",
+      value:
+        latestAssessment?.phq9Score != null
+          ? String(latestAssessment.phq9Score)
+          : "—",
       note: latestAssessment?.phq9Severity ?? "No completed assessment",
       tone: "info" as const,
     },
     {
       label: "Latest GAD-7 score",
-      value: latestAssessment?.gad7Score != null
-        ? String(latestAssessment.gad7Score)
-        : "—",
+      value:
+        latestAssessment?.gad7Score != null
+          ? String(latestAssessment.gad7Score)
+          : "—",
       note: latestAssessment?.gad7Severity ?? "No completed assessment",
       tone: "success" as const,
     },
@@ -245,7 +255,11 @@ export function AssessmentSummaryCards({
 
 export function MoodSummaryCard() {
   return (
-    <section id="mood" aria-labelledby="mood-heading" className="space-y-4 scroll-mt-28">
+    <section
+      id="mood"
+      aria-labelledby="mood-heading"
+      className="space-y-4 scroll-mt-28"
+    >
       <SectionHeading
         id="mood-heading"
         eyebrow="Mood summary"
@@ -269,7 +283,10 @@ export function MoodSummaryCard() {
           <div className="grid gap-2 rounded-2xl border border-border bg-muted/30 p-4">
             <div className="flex items-end gap-2">
               {moodTrend.map((point) => (
-                <div key={point.label} className="flex flex-1 flex-col items-center gap-2">
+                <div
+                  key={point.label}
+                  className="flex flex-1 flex-col items-center gap-2"
+                >
                   <div className="flex h-32 w-full items-end justify-center rounded-lg bg-background p-2">
                     <div
                       className="w-full rounded-md bg-primary/80"
@@ -288,8 +305,13 @@ export function MoodSummaryCard() {
               ["9 days", "consistent logging"],
               ["Most common", "evening check-ins"],
             ].map(([value, label]) => (
-              <div key={value} className="rounded-2xl border border-border bg-muted/20 p-4">
-                <div className="text-xl font-semibold tracking-tight">{value}</div>
+              <div
+                key={value}
+                className="rounded-2xl border border-border bg-muted/20 p-4"
+              >
+                <div className="text-xl font-semibold tracking-tight">
+                  {value}
+                </div>
                 <Small>{label}</Small>
               </div>
             ))}
@@ -302,7 +324,11 @@ export function MoodSummaryCard() {
 
 export function RecentActivity() {
   return (
-    <section id="activity" aria-labelledby="activity-heading" className="space-y-4 scroll-mt-28">
+    <section
+      id="activity"
+      aria-labelledby="activity-heading"
+      className="space-y-4 scroll-mt-28"
+    >
       <SectionHeading
         id="activity-heading"
         eyebrow="Recent activity"
@@ -316,7 +342,8 @@ export function RecentActivity() {
               key={item.title}
               className={cn(
                 "flex gap-4 rounded-2xl p-4 transition-colors hover:bg-muted/40",
-                index !== recentActivity.length - 1 && "border-b border-border/70 pb-5",
+                index !== recentActivity.length - 1 &&
+                  "border-b border-border/70 pb-5",
               )}
             >
               <div className="mt-1 h-11 w-11 shrink-0 rounded-full bg-primary/10 text-center text-xs font-semibold leading-[2.75rem] text-primary">
@@ -342,7 +369,11 @@ export function RecentActivity() {
 
 export function UpcomingReminders() {
   return (
-    <section id="reminders" aria-labelledby="reminders-heading" className="space-y-4 scroll-mt-28">
+    <section
+      id="reminders"
+      aria-labelledby="reminders-heading"
+      className="space-y-4 scroll-mt-28"
+    >
       <SectionHeading
         id="reminders-heading"
         eyebrow="Upcoming reminders"
@@ -362,7 +393,9 @@ export function UpcomingReminders() {
                   <CardDescription>{reminder.detail}</CardDescription>
                 </div>
                 <div className="text-right">
-                  <Small className="block text-primary">{reminder.priority}</Small>
+                  <Small className="block text-primary">
+                    {reminder.priority}
+                  </Small>
                   <Small>{reminder.due}</Small>
                 </div>
               </div>

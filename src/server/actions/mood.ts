@@ -1,5 +1,6 @@
 "use server";
 
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -14,7 +15,22 @@ const moodSchema = z.object({
     .optional(),
 });
 
-export async function saveMood(input: unknown) {
+const moodLogSelect = {
+  id: true,
+  mood: true,
+  note: true,
+  loggedAt: true,
+} satisfies Prisma.MoodLogSelect;
+
+export type SaveMoodInput = z.infer<typeof moodSchema>;
+export type SavedMoodLog = Prisma.MoodLogGetPayload<{
+  select: typeof moodLogSelect;
+}>;
+export type SaveMoodResult =
+  | { success: true; moodLog: SavedMoodLog }
+  | { success: false; error: string };
+
+export async function saveMood(input: unknown): Promise<SaveMoodResult> {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -33,22 +49,24 @@ export async function saveMood(input: unknown) {
     };
   }
 
-  const moodLog = await prisma.moodLog.create({
-    data: {
-      userId: currentUser.id,
-      mood: parsed.data.mood,
-      note: parsed.data.note || null,
-    },
-    select: {
-      id: true,
-      mood: true,
-      note: true,
-      loggedAt: true,
-    },
-  });
+  try {
+    const moodLog = await prisma.moodLog.create({
+      data: {
+        userId: currentUser.id,
+        mood: parsed.data.mood,
+        note: parsed.data.note || null,
+      },
+      select: moodLogSelect,
+    });
 
-  return {
-    success: true,
-    moodLog,
-  };
+    return {
+      success: true,
+      moodLog,
+    };
+  } catch {
+    return {
+      success: false,
+      error: "Unable to save your mood. Please try again.",
+    };
+  }
 }

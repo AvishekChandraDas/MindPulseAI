@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Small, Text } from "@/components/ui/typography";
 
 import type { ScoreResult } from "@/lib/assessment/scoring";
@@ -32,9 +38,7 @@ export function AssessmentResultView({
           <CardTitle className="text-2xl sm:text-3xl">
             Your assessment was saved successfully.
           </CardTitle>
-          <CardDescription>
-            {savedMessage}
-          </CardDescription>
+          <CardDescription>{savedMessage}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-3">
@@ -50,7 +54,10 @@ export function AssessmentResultView({
 
           <div className="rounded-2xl border border-border bg-background p-4">
             <Text className="text-muted-foreground">
-              Educational disclaimer: this page is not a diagnosis, medical advice, or emergency support. If you are in immediate danger or thinking about harming yourself, contact local emergency services or a crisis line right away.
+              Educational disclaimer: this page is not a diagnosis, medical
+              advice, or emergency support. If you are in immediate danger or
+              thinking about harming yourself, contact local emergency services
+              or a crisis line right away.
             </Text>
           </div>
         </CardContent>
@@ -63,7 +70,9 @@ export function AssessmentResultView({
             <CardDescription>{phq9.band.description}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Text className="text-muted-foreground">{phq9.band.recommendation}</Text>
+            <Text className="text-muted-foreground">
+              {phq9.band.recommendation}
+            </Text>
           </CardContent>
         </Card>
 
@@ -73,7 +82,9 @@ export function AssessmentResultView({
             <CardDescription>{gad7.band.description}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Text className="text-muted-foreground">{gad7.band.recommendation}</Text>
+            <Text className="text-muted-foreground">
+              {gad7.band.recommendation}
+            </Text>
           </CardContent>
         </Card>
       </div>
@@ -82,12 +93,14 @@ export function AssessmentResultView({
         <CardHeader>
           <CardTitle>Educational disclaimer</CardTitle>
           <CardDescription>
-            This record is meant for screening and reflection, not diagnosis or emergency care.
+            This record is meant for screening and reflection, not diagnosis or
+            emergency care.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Text className="text-muted-foreground">
-            If you are in immediate danger or thinking about harming yourself, contact local emergency services or a crisis line right away.
+            If you are in immediate danger or thinking about harming yourself,
+            contact local emergency services or a crisis line right away.
           </Text>
         </CardContent>
       </Card>
@@ -121,11 +134,17 @@ function ResultCard({
 }) {
   return (
     <div className="rounded-2xl border border-border bg-background p-4">
-      <Small className="uppercase tracking-[0.18em] text-primary">{label}</Small>
+      <Small className="uppercase tracking-[0.18em] text-primary">
+        {label}
+      </Small>
       {result ? (
         <>
-          <div className="mt-2 text-3xl font-semibold tracking-tight">{result.score}</div>
-          <Text className="mt-1 text-muted-foreground">{result.band.label}</Text>
+          <div className="mt-2 text-3xl font-semibold tracking-tight">
+            {result.score}
+          </div>
+          <Text className="mt-1 text-muted-foreground">
+            {result.band.label}
+          </Text>
         </>
       ) : (
         <Text className="mt-2 break-all text-muted-foreground">{value}</Text>

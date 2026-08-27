@@ -59,9 +59,55 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
 
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
+}
+
+.homepage-hero {
+  background:
+    radial-gradient(
+      circle at 78% 22%,
+      color-mix(in srgb, var(--primary) 13%, transparent),
+      transparent 26rem
+    ),
+    radial-gradient(
+      circle at 18% 88%,
+      color-mix(in srgb, var(--accent) 46%, transparent),
+      transparent 26rem
+    );
+}
+
+.homepage-cta {
+  background-image:
+    radial-gradient(
+      circle at 90% 15%,
+      rgb(255 255 255 / 14%),
+      transparent 17rem
+    ),
+    radial-gradient(circle at 5% 100%, rgb(255 255 255 / 9%), transparent 21rem);
+}
+
+.homepage-cta button {
+  background: var(--card);
+  color: var(--primary);
+}
+
+.homepage-cta button:hover {
+  background: color-mix(in srgb, var(--card) 90%, var(--primary));
+}
+
+.homepage-cta a {
+  border-color: rgb(255 255 255 / 35%);
+  color: var(--primary-foreground);
+}
+
+.homepage-cta a:hover {
+  background: rgb(255 255 255 / 10%);
 }
 
 @layer utilities {

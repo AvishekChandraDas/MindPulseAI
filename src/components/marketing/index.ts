@@ -5,5 +5,4 @@ export {
   FinalCtaSection,
   HowItWorksSection,
   LandingHero,
-  TestimonialsSection,
 } from "./landing-sections";

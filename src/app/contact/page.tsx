@@ -49,8 +49,8 @@ export default function ContactPage() {
               <H1>Talk to the team when you need a human answer.</H1>
               <Lead>
                 Placeholder content for support, partnerships, and general
-                questions. A form is intentionally not included yet, so this page
-                stays simple and accessible.
+                questions. A form is intentionally not included yet, so this
+                page stays simple and accessible.
               </Lead>
               <div className="flex flex-wrap gap-3">
                 <ContactEmailButton />
@@ -105,7 +105,9 @@ export default function ContactPage() {
                   <CardTitle>{point.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Text className="text-muted-foreground">{point.description}</Text>
+                  <Text className="text-muted-foreground">
+                    {point.description}
+                  </Text>
                 </CardContent>
               </Card>
             ))}

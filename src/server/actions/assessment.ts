@@ -2,10 +2,16 @@
 
 import { z } from "zod";
 
-import { phq9Questions, gad7Questions } from "@/components/assessment/mock-data";
+import {
+  phq9Questions,
+  gad7Questions,
+} from "@/components/assessment/mock-data";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { calculateGad7Score, calculatePhq9Score } from "@/lib/assessment/scoring";
+import {
+  calculateGad7Score,
+  calculatePhq9Score,
+} from "@/lib/assessment/scoring";
 
 const answerValueSchema = z.enum(["0", "1", "2", "3"]);
 
@@ -19,8 +25,7 @@ const gad7Ids = gad7Questions.map((question) => question.id);
 const allQuestionIds = [...phq9Ids, ...gad7Ids];
 
 type SaveAssessmentResult =
-  | { ok: true; assessmentId: string }
-  | { ok: false; error: string };
+  { ok: true; assessmentId: string } | { ok: false; error: string };
 
 async function ensureQuestionRecords() {
   const questionRecords = [
@@ -62,7 +67,9 @@ async function ensureQuestionRecords() {
   }
 }
 
-export async function saveAssessmentAction(input: unknown): Promise<SaveAssessmentResult> {
+export async function saveAssessmentAction(
+  input: unknown,
+): Promise<SaveAssessmentResult> {
   const parsed = saveAssessmentSchema.safeParse(input);
 
   if (!parsed.success) {
@@ -81,7 +88,9 @@ export async function saveAssessmentAction(input: unknown): Promise<SaveAssessme
     };
   }
 
-  const missingQuestionIds = allQuestionIds.filter((questionId) => !parsed.data.answers[questionId]);
+  const missingQuestionIds = allQuestionIds.filter(
+    (questionId) => !parsed.data.answers[questionId],
+  );
 
   if (missingQuestionIds.length > 0) {
     return {

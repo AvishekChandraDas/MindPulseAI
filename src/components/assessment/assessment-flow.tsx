@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 
 import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { FieldHint, Label } from "@/components/ui/input";
 import { Small, Text } from "@/components/ui/typography";
 
@@ -33,7 +39,8 @@ const getStepIndexFromHash = (hash: string) => {
   return index >= 0 ? index : 0;
 };
 
-const questionError = (value: string) => (!value ? "Please select an answer to continue." : "");
+const questionError = (value: string) =>
+  !value ? "Please select an answer to continue." : "";
 
 function QuestionGroup({
   questions,
@@ -68,7 +75,9 @@ function QuestionGroup({
               value={value}
               onChange={(nextValue) => onChange(question.id, nextValue)}
               invalid={Boolean(error)}
-              describedBy={error ? `${question.id}-error` : `${question.id}-description`}
+              describedBy={
+                error ? `${question.id}-error` : `${question.id}-description`
+              }
             />
           </QuestionCard>
         );
@@ -93,7 +102,10 @@ export function AssessmentFlow() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const currentStepIndex = useMemo(() => getStepIndexFromHash(stepHash), [stepHash]);
+  const currentStepIndex = useMemo(
+    () => getStepIndexFromHash(stepHash),
+    [stepHash],
+  );
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -116,8 +128,12 @@ export function AssessmentFlow() {
     }
   }, []);
 
-  const phq9Answered = phq9Questions.filter((question) => answers[question.id]).length;
-  const gad7Answered = gad7Questions.filter((question) => answers[question.id]).length;
+  const phq9Answered = phq9Questions.filter(
+    (question) => answers[question.id],
+  ).length;
+  const gad7Answered = gad7Questions.filter(
+    (question) => answers[question.id],
+  ).length;
 
   const goToHash = (hash: string) => {
     window.location.hash = hash;
@@ -127,14 +143,20 @@ export function AssessmentFlow() {
 
   const validateStep = () => {
     if (stepHash === "#consent" && !consentAccepted) {
-      setAttemptedStep((current) => ({ ...current, consent: "Please confirm the consent statement to continue." }));
+      setAttemptedStep((current) => ({
+        ...current,
+        consent: "Please confirm the consent statement to continue.",
+      }));
       return false;
     }
 
     if (stepHash === "#phq-9") {
       const missing = phq9Questions.some((question) => !answers[question.id]);
       if (missing) {
-        setAttemptedStep((current) => ({ ...current, "phq-9": "Complete every PHQ-9 question to continue." }));
+        setAttemptedStep((current) => ({
+          ...current,
+          "phq-9": "Complete every PHQ-9 question to continue.",
+        }));
         return false;
       }
     }
@@ -142,7 +164,10 @@ export function AssessmentFlow() {
     if (stepHash === "#gad-7") {
       const missing = gad7Questions.some((question) => !answers[question.id]);
       if (missing) {
-        setAttemptedStep((current) => ({ ...current, "gad-7": "Complete every GAD-7 question to continue." }));
+        setAttemptedStep((current) => ({
+          ...current,
+          "gad-7": "Complete every GAD-7 question to continue.",
+        }));
         return false;
       }
     }
@@ -155,7 +180,10 @@ export function AssessmentFlow() {
       return;
     }
 
-    const nextIndex = Math.min(currentStepIndex + 1, assessmentSteps.length - 1);
+    const nextIndex = Math.min(
+      currentStepIndex + 1,
+      assessmentSteps.length - 1,
+    );
     goToHash(assessmentSteps[nextIndex].href);
   };
 
@@ -190,7 +218,9 @@ export function AssessmentFlow() {
         return;
       }
 
-      router.push(`/dashboard/assessment/result?assessmentId=${response.assessmentId}&saved=1`);
+      router.push(
+        `/dashboard/assessment/result?assessmentId=${response.assessmentId}&saved=1`,
+      );
     });
   };
 
@@ -254,15 +284,21 @@ export function AssessmentFlow() {
 
               <div className="rounded-2xl border border-border bg-muted/30 p-4">
                 <div className="space-y-3">
-                  <Label htmlFor="consent-check" className="text-sm font-medium">
-                    I understand this screening is educational and not a diagnosis.
+                  <Label
+                    htmlFor="consent-check"
+                    className="text-sm font-medium"
+                  >
+                    I understand this screening is educational and not a
+                    diagnosis.
                   </Label>
                   <div className="flex items-start gap-3">
                     <input
                       id="consent-check"
                       type="checkbox"
                       checked={consentAccepted}
-                      onChange={(event) => setConsentAccepted(event.target.checked)}
+                      onChange={(event) =>
+                        setConsentAccepted(event.target.checked)
+                      }
                       className="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
                     />
                     <div className="space-y-1">
@@ -318,7 +354,8 @@ export function AssessmentFlow() {
                   Saved progress
                 </Small>
                 <Text className="mt-2 text-muted-foreground">
-                  Answers stay in component state while you review the questionnaire and are saved only after confirmation.
+                  Answers stay in component state while you review the
+                  questionnaire and are saved only after confirmation.
                 </Text>
               </div>
             </CardContent>
@@ -333,7 +370,9 @@ export function AssessmentFlow() {
               <Small className="uppercase tracking-[0.18em] text-primary">
                 PHQ-9
               </Small>
-              <CardTitle className="text-2xl">Depression screening questions</CardTitle>
+              <CardTitle className="text-2xl">
+                Depression screening questions
+              </CardTitle>
               <CardDescription>
                 Answer each question based on the last 2 weeks.
               </CardDescription>
@@ -345,7 +384,9 @@ export function AssessmentFlow() {
             questions={phq9Questions}
             answers={answers}
             attempted={Boolean(attemptedStep["phq-9"])}
-            onChange={(questionId, value) => setAnswers((current) => ({ ...current, [questionId]: value }))}
+            onChange={(questionId, value) =>
+              setAnswers((current) => ({ ...current, [questionId]: value }))
+            }
           />
 
           <NavigationButtons
@@ -364,7 +405,9 @@ export function AssessmentFlow() {
               <Small className="uppercase tracking-[0.18em] text-primary">
                 GAD-7
               </Small>
-              <CardTitle className="text-2xl">Anxiety screening questions</CardTitle>
+              <CardTitle className="text-2xl">
+                Anxiety screening questions
+              </CardTitle>
               <CardDescription>
                 Complete the final screening step using the same response scale.
               </CardDescription>
@@ -376,7 +419,9 @@ export function AssessmentFlow() {
             questions={gad7Questions}
             answers={answers}
             attempted={Boolean(attemptedStep["gad-7"])}
-            onChange={(questionId, value) => setAnswers((current) => ({ ...current, [questionId]: value }))}
+            onChange={(questionId, value) =>
+              setAnswers((current) => ({ ...current, [questionId]: value }))
+            }
           />
 
           <NavigationButtons
@@ -400,7 +445,8 @@ export function AssessmentFlow() {
                   Your responses are ready for review.
                 </CardTitle>
                 <CardDescription>
-                    Your answers will be saved with your account and scored locally on the server.
+                  Your answers will be saved with your account and scored
+                  locally on the server.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -410,11 +456,16 @@ export function AssessmentFlow() {
                     ["PHQ-9", `${phq9Answered}/9 answered`],
                     ["GAD-7", `${gad7Answered}/7 answered`],
                   ].map(([label, value]) => (
-                    <div key={label} className="rounded-2xl border border-border bg-background p-4">
+                    <div
+                      key={label}
+                      className="rounded-2xl border border-border bg-background p-4"
+                    >
                       <Small className="uppercase tracking-[0.18em] text-primary">
                         {label}
                       </Small>
-                      <div className="mt-2 text-lg font-semibold tracking-tight">{value}</div>
+                      <div className="mt-2 text-lg font-semibold tracking-tight">
+                        {value}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -445,7 +496,9 @@ export function AssessmentFlow() {
                     Consent
                   </Small>
                   <Text className="mt-2 text-muted-foreground">
-                    {consentAccepted ? "Consent confirmed." : "Consent not yet confirmed."}
+                    {consentAccepted
+                      ? "Consent confirmed."
+                      : "Consent not yet confirmed."}
                   </Text>
                 </div>
                 <div className="rounded-2xl border border-border bg-muted/30 p-4">
@@ -453,7 +506,8 @@ export function AssessmentFlow() {
                     PHQ-9 and GAD-7
                   </Small>
                   <Text className="mt-2 text-muted-foreground">
-                    {phq9Answered + gad7Answered} question responses captured in local state.
+                    {phq9Answered + gad7Answered} question responses captured in
+                    local state.
                   </Text>
                 </div>
               </CardContent>
@@ -467,7 +521,11 @@ export function AssessmentFlow() {
             nextLabel="Start over"
           />
           <div className="flex justify-end">
-            <Button type="button" onClick={handleSaveAssessment} isLoading={isPending}>
+            <Button
+              type="button"
+              onClick={handleSaveAssessment}
+              isLoading={isPending}
+            >
               Save and view results
             </Button>
           </div>

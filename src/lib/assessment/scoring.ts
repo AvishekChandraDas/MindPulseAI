@@ -17,31 +17,38 @@ const phq9Bands: Array<{ max: number; band: ScoreBand }> = [
     band: {
       label: "Minimal",
       description: "Very few symptoms were endorsed across the PHQ-9 items.",
-      recommendation: "Continue routine self-checks and watch for changes over time.",
+      recommendation:
+        "Continue routine self-checks and watch for changes over time.",
     },
   },
   {
     max: 9,
     band: {
       label: "Mild",
-      description: "A few symptoms appear present, but the total remains relatively low.",
-      recommendation: "Consider short-term self-care strategies and repeat screening later.",
+      description:
+        "A few symptoms appear present, but the total remains relatively low.",
+      recommendation:
+        "Consider short-term self-care strategies and repeat screening later.",
     },
   },
   {
     max: 14,
     band: {
       label: "Moderate",
-      description: "Symptoms may be affecting mood or daily functioning in a noticeable way.",
-      recommendation: "Review results with a trusted professional or support person.",
+      description:
+        "Symptoms may be affecting mood or daily functioning in a noticeable way.",
+      recommendation:
+        "Review results with a trusted professional or support person.",
     },
   },
   {
     max: 19,
     band: {
       label: "Moderately severe",
-      description: "A stronger symptom pattern is present and may need additional support.",
-      recommendation: "Seek a follow-up conversation with a mental health professional.",
+      description:
+        "A stronger symptom pattern is present and may need additional support.",
+      recommendation:
+        "Seek a follow-up conversation with a mental health professional.",
     },
   },
   {
@@ -49,7 +56,8 @@ const phq9Bands: Array<{ max: number; band: ScoreBand }> = [
     band: {
       label: "Severe",
       description: "The response pattern suggests a high symptom burden.",
-      recommendation: "Reach out for prompt professional support and check local resources.",
+      recommendation:
+        "Reach out for prompt professional support and check local resources.",
     },
   },
 ];
@@ -67,8 +75,10 @@ const gad7Bands: Array<{ max: number; band: ScoreBand }> = [
     max: 9,
     band: {
       label: "Mild",
-      description: "Some anxiety-related symptoms are present, but the total is still low.",
-      recommendation: "Use grounding strategies and repeat the screening later if needed.",
+      description:
+        "Some anxiety-related symptoms are present, but the total is still low.",
+      recommendation:
+        "Use grounding strategies and repeat the screening later if needed.",
     },
   },
   {
@@ -76,14 +86,16 @@ const gad7Bands: Array<{ max: number; band: ScoreBand }> = [
     band: {
       label: "Moderate",
       description: "The score suggests a moderate anxiety signal.",
-      recommendation: "Discuss the result with a professional or trusted support person.",
+      recommendation:
+        "Discuss the result with a professional or trusted support person.",
     },
   },
   {
     max: 21,
     band: {
       label: "Severe",
-      description: "The response pattern suggests substantial anxiety symptoms.",
+      description:
+        "The response pattern suggests substantial anxiety symptoms.",
       recommendation: "Seek prompt support from a qualified professional.",
     },
   },
@@ -94,12 +106,24 @@ function toNumericScore(value: string | undefined): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function interpretScore(score: number, bands: Array<{ max: number; band: ScoreBand }>): ScoreBand {
-  return bands.find((entry) => score <= entry.max)?.band ?? bands[bands.length - 1].band;
+function interpretScore(
+  score: number,
+  bands: Array<{ max: number; band: ScoreBand }>,
+): ScoreBand {
+  return (
+    bands.find((entry) => score <= entry.max)?.band ??
+    bands[bands.length - 1].band
+  );
 }
 
-export function calculatePhq9Score(answerMap: AssessmentAnswerMap, questionIds: string[]) {
-  const score = questionIds.reduce((total, questionId) => total + toNumericScore(answerMap[questionId]), 0);
+export function calculatePhq9Score(
+  answerMap: AssessmentAnswerMap,
+  questionIds: string[],
+) {
+  const score = questionIds.reduce(
+    (total, questionId) => total + toNumericScore(answerMap[questionId]),
+    0,
+  );
 
   return {
     score,
@@ -107,8 +131,14 @@ export function calculatePhq9Score(answerMap: AssessmentAnswerMap, questionIds: 
   } satisfies ScoreResult;
 }
 
-export function calculateGad7Score(answerMap: AssessmentAnswerMap, questionIds: string[]) {
-  const score = questionIds.reduce((total, questionId) => total + toNumericScore(answerMap[questionId]), 0);
+export function calculateGad7Score(
+  answerMap: AssessmentAnswerMap,
+  questionIds: string[],
+) {
+  const score = questionIds.reduce(
+    (total, questionId) => total + toNumericScore(answerMap[questionId]),
+    0,
+  );
 
   return {
     score,

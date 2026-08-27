@@ -31,7 +31,10 @@ export function QuestionCard({
           <Small className="uppercase tracking-[0.18em] text-primary">
             Question
           </Small>
-          <h3 id={id} className="text-lg font-semibold tracking-tight sm:text-xl">
+          <h3
+            id={id}
+            className="text-lg font-semibold tracking-tight sm:text-xl"
+          >
             {title}
           </h3>
           <Text id={descriptionId} className="text-muted-foreground">
