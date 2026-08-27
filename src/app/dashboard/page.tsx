@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { getDashboardData } from "@/server/queries/dashboard";
 import { getMoodLogs } from "@/server/queries/mood";
+import { AssessmentScoreCharts, MoodTrendChart } from "@/components/analytics";
 import { MoodHistory, MoodTracker } from "@/components/mood";
 
 import {
@@ -32,6 +33,7 @@ export default async function DashboardPage() {
 
       <section id="assessments" className="scroll-mt-28 space-y-6">
         <AssessmentSummaryCards assessments={assessments} />
+        <AssessmentScoreCharts assessments={assessments} />
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
@@ -41,6 +43,7 @@ export default async function DashboardPage() {
           className="space-y-6 scroll-mt-28"
         >
           <MoodTracker />
+          <MoodTrendChart moodLogs={moodLogs} />
           <MoodHistory moodLogs={moodLogs} />
         </section>
         <div className="space-y-6">
