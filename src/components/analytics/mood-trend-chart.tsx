@@ -1,12 +1,10 @@
-import type { MoodLevel } from "@prisma/client";
-
 import type { MoodLog } from "@/server/queries/mood";
 
 import { ChartCard } from "./chart-card";
 import { LineChart } from "./line-chart";
 import type { ChartDataPoint } from "./types";
 
-const moodScores: Record<MoodLevel, number> = {
+const moodScores: Record<MoodLog["mood"], number> = {
   VERY_LOW: 1,
   LOW: 2,
   NEUTRAL: 3,
