@@ -1,9 +1,7 @@
-import type { MoodLevel } from "@prisma/client";
-
 import type { MoodLog } from "@/server/queries/mood";
 import { Card, CardContent, H3, Small, Text } from "@/components/ui";
 
-const moodDetails: Record<MoodLevel, { label: string; emoji: string }> = {
+const moodDetails: Record<MoodLog["mood"], { label: string; emoji: string }> = {
   VERY_LOW: { label: "Very low", emoji: "😞" },
   LOW: { label: "Low", emoji: "🙁" },
   NEUTRAL: { label: "Neutral", emoji: "😐" },
