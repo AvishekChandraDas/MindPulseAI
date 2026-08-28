@@ -81,14 +81,22 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
     );
   }
 
-  const answerMap = assessment.responses.reduce<Record<string, string>>(
-    (accumulator, response) => {
-      accumulator[response.questionId] =
-        response.selectedOption ?? String(response.answerNumber ?? "0");
-      return accumulator;
+  const answerMap = assessment.responses.reduce(
+  (
+    accumulator: Record<string, string>,
+    response: {
+      questionId: string;
+      selectedOption: string | null;
+      answerNumber: number | null;
     },
-    {},
-  );
+  ) => {
+    accumulator[response.questionId] =
+      response.selectedOption ?? String(response.answerNumber ?? "0");
+
+    return accumulator;
+  },
+  {} as Record<string, string>,
+);
 
   const phq9 =
     assessment.phq9Score !== null && assessment.phq9Score !== undefined
