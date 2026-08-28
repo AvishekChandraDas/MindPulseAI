@@ -80,6 +80,32 @@
       color-mix(in srgb, var(--accent) 46%, transparent),
       transparent 26rem
     );
+  position: relative;
+}
+
+.homepage-hero::before {
+  position: absolute;
+  top: -13rem;
+  left: 45%;
+  width: 38rem;
+  height: 38rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+  border-radius: 9999px;
+  content: "";
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.homepage-hero::after {
+  position: absolute;
+  right: 6%;
+  bottom: -12rem;
+  width: 32rem;
+  height: 32rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 10%, transparent);
+  border-radius: 9999px;
+  content: "";
+  pointer-events: none;
 }
 
 .homepage-cta {

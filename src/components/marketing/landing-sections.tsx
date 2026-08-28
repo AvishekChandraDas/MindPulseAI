@@ -7,7 +7,6 @@ import {
   Container,
   H1,
   H2,
-  H3,
   Lead,
   Section,
   Small,
@@ -87,88 +86,140 @@ const faqs = [
 
 export function LandingHero() {
   return (
-    <Section className="homepage-hero overflow-hidden py-14 sm:py-20 lg:py-24">
+    <Section className="homepage-hero overflow-hidden py-16 sm:py-24 lg:py-28">
       <Container size="xl">
-        <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <FadeIn className="space-y-8">
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/15 bg-card/80 px-3.5 py-2 text-xs font-semibold tracking-wide text-primary shadow-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />A calmer
-              place to check in
+        <div className="grid gap-14 lg:grid-cols-[0.96fr_1.04fr] lg:items-center">
+          <FadeIn className="relative z-10 space-y-8">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/15 bg-card/80 px-4 py-2 text-xs font-semibold tracking-[0.08em] text-primary shadow-sm backdrop-blur">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/50" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+              </span>
+              Your wellness, in clearer focus
             </div>
-            <div className="space-y-5">
-              <H1 className="max-w-xl text-5xl leading-[1.06] sm:text-6xl">
-                Make space for how you&apos;re really doing.
+            <div className="space-y-6">
+              <H1 className="max-w-2xl text-5xl leading-[1.03] sm:text-6xl lg:text-7xl">
+                A calmer way to <span className="text-primary">understand</span>{" "}
+                how you&apos;re doing.
               </H1>
-              <Lead className="max-w-xl">
-                A private, guided check-in that helps you notice your mental
-                wellness patterns—one thoughtful moment at a time.
+              <Lead className="max-w-xl text-lg sm:text-xl">
+                MindPulse brings thoughtful assessments, mood check-ins, and
+                clear reflections together in one private, supportive space.
               </Lead>
             </div>
             <LandingHeroActions />
-            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-muted-foreground">
+            <div className="flex flex-wrap gap-x-5 gap-y-3 text-sm font-medium text-muted-foreground">
               <span className="inline-flex items-center gap-2">
-                <b className="text-primary">✓</b> Takes only a few minutes
+                <b className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-xs text-primary">
+                  ✓
+                </b>
+                Takes about 3 minutes
               </span>
               <span className="inline-flex items-center gap-2">
-                <b className="text-primary">✓</b> Private and judgment-free
+                <b className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-xs text-primary">
+                  ✓
+                </b>
+                Private and judgment-free
               </span>
             </div>
           </FadeIn>
-          <FadeIn delay={0.08} className="relative">
-            <div className="absolute -right-10 top-8 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
-            <div className="absolute bottom-6 left-0 h-36 w-36 rounded-full bg-accent/70 blur-3xl" />
-            <Card className="relative overflow-hidden rounded-[1.75rem] border-primary/15 bg-card/90 shadow-2xl shadow-primary/10">
-              <CardHeader className="space-y-4 border-b border-border/70 pb-6">
+          <FadeIn
+            delay={0.08}
+            className="homepage-visual relative mx-auto w-full max-w-2xl"
+          >
+            <div className="absolute -right-16 top-8 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
+            <div className="absolute bottom-2 left-2 h-48 w-48 rounded-full bg-accent/70 blur-3xl" />
+            <div className="absolute inset-x-12 bottom-0 h-20 rounded-full bg-primary/20 blur-2xl" />
+            <Card className="relative overflow-hidden rounded-[2rem] border-white/70 bg-card/85 shadow-2xl shadow-primary/15 backdrop-blur">
+              <CardContent className="space-y-6 p-5 sm:p-7">
                 <div className="flex items-center justify-between gap-4">
-                  <Small className="inline-flex items-center gap-2 uppercase tracking-[0.18em] text-primary">
-                    <span className="h-2 w-2 rounded-full bg-primary" />
-                    Today&apos;s check-in
-                  </Small>
-                  <div className="rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground">
-                    About 3 min
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-semibold text-primary-foreground">
+                      MP
+                    </span>
+                    <div>
+                      <Small className="uppercase tracking-[0.18em] text-primary">
+                        MindPulse
+                      </Small>
+                      <div className="text-sm font-semibold">
+                        Your wellbeing
+                      </div>
+                    </div>
                   </div>
+                  <span className="rounded-full bg-success/10 px-3 py-1.5 text-xs font-semibold text-success">
+                    Today
+                  </span>
                 </div>
-                <CardTitle className="text-xl leading-tight sm:text-2xl">
-                  How have you been feeling lately?
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-5 pt-6">
-                <div className="rounded-2xl bg-muted/60 p-5">
-                  <div className="mb-5 flex items-center justify-between text-sm text-muted-foreground">
-                    <span>Question 1 of 9</span>
-                    <span className="font-medium text-primary">
-                      11% complete
+                <div className="rounded-3xl bg-[linear-gradient(135deg,var(--primary),#0d9488)] p-6 text-primary-foreground">
+                  <Small className="text-primary-foreground/70">
+                    Daily pulse
+                  </Small>
+                  <div className="mt-2 flex items-end justify-between gap-4">
+                    <div>
+                      <div className="text-3xl font-semibold tracking-tight">
+                        Feeling steady
+                      </div>
+                      <p className="mt-1 text-sm text-primary-foreground/75">
+                        A small check-in can reveal meaningful patterns.
+                      </p>
+                    </div>
+                    <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-4 border-primary-foreground/25 bg-primary-foreground/10 text-3xl">
+                      🙂
                     </span>
                   </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-border/70">
-                    <div className="h-full w-[11%] rounded-full bg-primary" />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-[1.2fr_0.8fr]">
+                  <div className="rounded-2xl border border-border/70 bg-background p-4">
+                    <div className="flex items-center justify-between">
+                      <Small className="uppercase tracking-[0.14em] text-muted-foreground">
+                        Weekly rhythm
+                      </Small>
+                      <span className="text-xs font-semibold text-primary">
+                        +12%
+                      </span>
+                    </div>
+                    <div className="mt-5 flex h-20 items-end gap-2">
+                      {[36, 58, 45, 72, 64, 84, 76].map((height, index) => (
+                        <span
+                          key={index}
+                          className="flex-1 rounded-t-lg bg-primary/15"
+                          style={{ height: `${height}%` }}
+                        >
+                          <span
+                            className="block w-full rounded-t-lg bg-primary"
+                            style={{ height: index === 5 ? "100%" : "72%" }}
+                          />
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-3 flex justify-between text-[10px] font-medium text-muted-foreground">
+                      <span>MON</span>
+                      <span>WED</span>
+                      <span>FRI</span>
+                      <span>SUN</span>
+                    </div>
                   </div>
-                  <H3 className="mt-6 text-xl">
-                    Over the last two weeks, how often have you felt down,
-                    depressed, or hopeless?
-                  </H3>
-                  <div className="mt-5 grid gap-2">
-                    {[
-                      "Not at all",
-                      "Several days",
-                      "More than half the days",
-                    ].map((label, index) => (
-                      <div
-                        key={label}
-                        className={`rounded-xl border px-4 py-3 text-sm font-medium ${index === 0 ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-foreground"}`}
-                      >
-                        {label}
-                      </div>
-                    ))}
+                  <div className="rounded-2xl border border-border/70 bg-muted/50 p-4">
+                    <Small className="uppercase tracking-[0.14em] text-muted-foreground">
+                      Next step
+                    </Small>
+                    <div className="mt-4 flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-lg text-accent-foreground">
+                      ✦
+                    </div>
+                    <div className="mt-3 text-sm font-semibold">
+                      Reflect with clarity
+                    </div>
+                    <Small className="mt-1 block leading-5">
+                      Gentle insights, shaped around you.
+                    </Small>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl border border-primary/10 bg-primary/5 p-4">
+                <div className="flex items-center gap-3 rounded-2xl border border-primary/10 bg-primary/5 p-4">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                     ✦
                   </span>
                   <Small className="leading-5">
-                    There are no right answers here. This is simply a moment for
-                    you.
+                    Not a diagnosis—just a clearer place to begin.
                   </Small>
                 </div>
               </CardContent>

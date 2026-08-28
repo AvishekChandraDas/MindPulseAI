@@ -4,6 +4,7 @@ import { getDashboardData } from "@/server/queries/dashboard";
 import { getMoodLogs } from "@/server/queries/mood";
 import { AssessmentScoreCharts, MoodTrendChart } from "@/components/analytics";
 import { MoodHistory, MoodTracker } from "@/components/mood";
+import { WellnessReportCard } from "@/components/reports";
 
 import {
   AssessmentSummaryCards,
@@ -51,6 +52,8 @@ export default async function DashboardPage() {
           <UpcomingReminders />
         </div>
       </section>
+
+      <WellnessReportCard />
     </div>
   );
 }

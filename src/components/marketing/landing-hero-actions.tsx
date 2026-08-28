@@ -30,13 +30,13 @@ export function LandingHeroActions() {
   return (
     <div className="flex flex-wrap gap-3">
       <Button size="lg" isLoading={isStarting} onClick={handleStart}>
-        Start your check-in
+        Start assessment
       </Button>
       <a
         href="#how-it-works"
         className="inline-flex h-11 items-center justify-center rounded-md border border-border bg-transparent px-6 text-sm font-medium text-foreground transition-colors hover:bg-muted"
       >
-        See how it works
+        Explore how it works
       </a>
     </div>
   );
