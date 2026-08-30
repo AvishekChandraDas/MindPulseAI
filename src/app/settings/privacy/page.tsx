@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { PrivacySettings } from "@/components/privacy";
 import { getCurrentUser } from "@/lib/auth/current-user";
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function PrivacySettingsPage() {
   if (!(await getCurrentUser())) {
-    notFound();
+    redirect("/sign-in");
   }
 
   return <PrivacySettings />;

@@ -1,4 +1,5 @@
 export { DashboardShell } from "./dashboard-shell";
+export { ReminderManager } from "./reminder-manager";
 export {
   AssessmentSummaryCards,
   DashboardWelcomeCard,

@@ -34,7 +34,7 @@ describe("MoodTracker", () => {
     const saveButton = screen.getByRole("button", { name: "Save mood" });
     expect((saveButton as HTMLButtonElement).disabled).toBe(true);
 
-    await user.click(screen.getByRole("radio", { name: /good/i }));
+    await user.click(screen.getByRole("radio", { name: /^good$/i }));
     await user.type(
       screen.getByRole("textbox", { name: /note/i }),
       "Felt focused",
@@ -63,7 +63,7 @@ describe("MoodTracker", () => {
 
     render(<MoodTracker />);
 
-    await user.click(screen.getByRole("radio", { name: /low/i }));
+    await user.click(screen.getByRole("radio", { name: /^low$/i }));
     await user.click(screen.getByRole("button", { name: "Save mood" }));
 
     expect((await screen.findByRole("status")).textContent).toContain(

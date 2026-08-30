@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { getDashboardData } from "@/server/queries/dashboard";
-import { getMoodLogs } from "@/server/queries/mood";
+import { getWellnessReports } from "@/server/queries/wellness-reports";
 import { AssessmentScoreCharts, MoodTrendChart } from "@/components/analytics";
 import { MoodHistory, MoodTracker } from "@/components/mood";
 import { WellnessReportCard } from "@/components/reports";
@@ -11,24 +11,32 @@ import {
   DashboardWelcomeCard,
   QuickActions,
   RecentActivity,
+  ReminderManager,
   UpcomingReminders,
 } from "@/components/dashboard";
 
 export const metadata: Metadata = {
   title: "Dashboard",
   description:
-    "Static dashboard layout for MindPulse AI with sidebar navigation, summary cards, mood insights, activity, and reminders.",
+    "Your private MindPulse AI overview, including assessments, mood insights, reports, activity, and reminders.",
 };
 
 export default async function DashboardPage() {
-  const [{ assessments }, moodLogs] = await Promise.all([
-    getDashboardData(),
-    getMoodLogs(),
-  ]);
+  const [{ user, assessments, moodLogs, reminders, activity }, reports] =
+    await Promise.all([getDashboardData(), getWellnessReports()]);
   return (
     <div className="space-y-10">
       <section id="overview" className="scroll-mt-28 space-y-6">
-        <DashboardWelcomeCard />
+        <DashboardWelcomeCard
+          name={user?.name ?? null}
+          completedAssessments={
+            assessments.filter(
+              (assessment) => assessment.status === "COMPLETED",
+            ).length
+          }
+          moodEntries={moodLogs.length}
+          reminders={reminders.length}
+        />
         <QuickActions />
       </section>
 
@@ -48,12 +56,14 @@ export default async function DashboardPage() {
           <MoodHistory moodLogs={moodLogs} />
         </section>
         <div className="space-y-6">
-          <RecentActivity />
-          <UpcomingReminders />
+          <RecentActivity activity={activity} />
+          <UpcomingReminders>
+            <ReminderManager reminders={reminders} />
+          </UpcomingReminders>
         </div>
       </section>
 
-      <WellnessReportCard />
+      <WellnessReportCard reports={reports} />
     </div>
   );
 }

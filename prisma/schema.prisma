@@ -36,21 +36,69 @@ enum MoodLevel {
   VERY_GOOD
 }
 
+enum ReminderPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 model User {
-  id         String       @id @default(cuid())
-  email      String       @unique
-  name       String?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  assessments Assessment[]
-  moodLogs   MoodLog[]
+  id              String           @id @default(cuid())
+  email           String           @unique
+  name            String?
+  emailVerified   DateTime?
+  image           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  accounts        Account[]
+  sessions        Session[]
+  assessments     Assessment[]
+  moodLogs        MoodLog[]
+  reminders       Reminder[]
+  wellnessReports WellnessReport[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model Assessment {
-  id           String            @id @default(cuid())
+  id           String           @id @default(cuid())
   userId       String?
-  user         User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  status       AssessmentStatus  @default(IN_PROGRESS)
+  user         User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status       AssessmentStatus @default(IN_PROGRESS)
   score        Int?
   phq9Score    Int?
   gad7Score    Int?
@@ -58,10 +106,10 @@ model Assessment {
   gad7Severity String?
   riskLevel    RiskLevel?
   summary      String?
-  startedAt    DateTime          @default(now())
+  startedAt    DateTime         @default(now())
   completedAt  DateTime?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
   responses    Response[]
 
   @@index([userId])
@@ -69,31 +117,31 @@ model Assessment {
 }
 
 model Question {
-  id         String       @id @default(cuid())
-  prompt     String
-  category   String
-  order      Int          @default(0)
-  type       QuestionType @default(MULTIPLE_CHOICE)
-  isActive   Boolean      @default(true)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  responses  Response[]
+  id        String       @id @default(cuid())
+  prompt    String
+  category  String
+  order     Int          @default(0)
+  type      QuestionType @default(MULTIPLE_CHOICE)
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  responses Response[]
 
   @@index([category])
   @@index([isActive, order])
 }
 
 model Response {
-  id            String      @id @default(cuid())
-  assessmentId  String
-  questionId    String
-  answerText    String?
-  answerNumber  Float?
-  answerBoolean Boolean?
+  id             String     @id @default(cuid())
+  assessmentId   String
+  questionId     String
+  answerText     String?
+  answerNumber   Float?
+  answerBoolean  Boolean?
   selectedOption String?
-  respondedAt   DateTime    @default(now())
-  assessment    Assessment  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  question      Question    @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  respondedAt    DateTime   @default(now())
+  assessment     Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  question       Question   @relation(fields: [questionId], references: [id], onDelete: Restrict)
 
   @@unique([assessmentId, questionId])
   @@index([assessmentId])
@@ -101,15 +149,48 @@ model Response {
 }
 
 model MoodLog {
-  id         String     @id @default(cuid())
-  userId     String
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  mood       MoodLevel
-  note       String?
-  loggedAt   DateTime   @default(now())
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mood      MoodLevel
+  note      String?
+  loggedAt  DateTime  @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([userId, loggedAt])
   @@index([mood])
+}
+
+model Reminder {
+  id          String           @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  dueAt       DateTime
+  priority    ReminderPriority @default(MEDIUM)
+  completedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, dueAt])
+  @@index([userId, completedAt])
+}
+
+model WellnessReport {
+  id                   String   @id @default(cuid())
+  userId               String
+  assessmentResults    Json
+  moodPatterns         Json
+  wellnessObservations Json
+  supportiveNextSteps  Json
+  disclaimer           String
+  generatedAt          DateTime @default(now())
+  createdAt            DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, generatedAt])
 }

@@ -17,6 +17,7 @@ export type WellnessReportAssessment = {
 };
 
 export type WellnessReportInput = {
+  userId: string;
   generatedAt: Date;
   assessments: WellnessReportAssessment[];
   moodLogs: MoodLog[];
@@ -76,6 +77,7 @@ export async function getWellnessReportInput(): Promise<WellnessReportInput | nu
   }
 
   return {
+    userId: user.id,
     generatedAt: new Date(),
     assessments: assessments.map((assessment) => ({
       id: assessment.id,
@@ -92,7 +94,6 @@ export async function getWellnessReportInput(): Promise<WellnessReportInput | nu
 
 function serializeReportInput(input: WellnessReportInput) {
   return {
-    generatedAt: input.generatedAt.toISOString(),
     assessments: input.assessments.map((assessment) => ({
       ...assessment,
       completedAt: assessment.completedAt?.toISOString() ?? null,

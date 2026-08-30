@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
-import { generateWellnessReportAction } from "@/server/actions/wellness-report";
+import {
+  deleteWellnessReport,
+  generateWellnessReportAction,
+} from "@/server/actions/wellness-report";
 import type { WellnessReportOutput } from "@/server/services/wellness-report";
+import type { StoredWellnessReport } from "@/server/queries/wellness-reports";
 import { Button, Card, CardContent, H3, Small, Text } from "@/components/ui";
 
 const dateTimeFormatter = new Intl.DateTimeFormat("en-US", {
@@ -19,8 +24,18 @@ type ReportSection = {
   entries: string[];
 };
 
-export function WellnessReportCard() {
-  const [report, setReport] = useState<WellnessReportOutput | null>(null);
+type DisplayReport = WellnessReportOutput & { id: string };
+
+export function WellnessReportCard({
+  reports,
+}: {
+  reports: StoredWellnessReport[];
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [report, setReport] = useState<DisplayReport | null>(
+    reports[0] ?? null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -33,6 +48,7 @@ export function WellnessReportCard() {
 
       if (result.success) {
         setReport(result.report);
+        router.refresh();
       } else {
         setError(result.error);
       }
@@ -41,6 +57,49 @@ export function WellnessReportCard() {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleDelete = () => {
+    if (!report) {
+      return;
+    }
+
+    startTransition(async () => {
+      setError(null);
+      const result = await deleteWellnessReport(report.id);
+
+      if (!result.success) {
+        setError(result.error ?? "Unable to delete this report right now.");
+        return;
+      }
+
+      setReport(reports.find((item) => item.id !== report.id) ?? null);
+      router.refresh();
+    });
+  };
+
+  const handleDownload = () => {
+    if (!report) {
+      return;
+    }
+
+    const text = [
+      "MindPulse AI wellness report",
+      `Generated: ${dateTimeFormatter.format(report.generatedAt)}`,
+      "",
+      ...sections.flatMap((section) => [
+        section.title,
+        ...section.entries.map((entry) => `- ${entry}`),
+        "",
+      ]),
+      report.disclaimer,
+    ].join("\n");
+    const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "mindpulse-wellness-report.txt";
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   const sections: ReportSection[] = report
@@ -79,11 +138,11 @@ export function WellnessReportCard() {
             <Button
               type="button"
               isLoading={isGenerating}
-              disabled={Boolean(report)}
+              disabled={isGenerating || isPending}
               loadingLabel="Generating wellness report"
               onClick={handleGenerate}
             >
-              {report ? "Report generated" : "Generate report"}
+              Generate new report
             </Button>
           </div>
 
@@ -105,6 +164,20 @@ export function WellnessReportCard() {
               <Small className="block">
                 Generated {dateTimeFormatter.format(report.generatedAt)}
               </Small>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" onClick={handleDownload}>
+                  Download
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  isLoading={isPending}
+                  loadingLabel="Deleting report"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </div>
               <div className="grid gap-5 lg:grid-cols-2">
                 {sections.map((section) => (
                   <div
@@ -140,13 +213,35 @@ export function WellnessReportCard() {
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-border bg-background/60 p-5">
-              <H3 className="text-base">No report generated yet</H3>
+              <H3 className="text-base">No report selected</H3>
               <Text className="mt-1 text-sm text-muted-foreground">
                 When you are ready, generate a report from the wellness data you
                 have saved so far.
               </Text>
             </div>
           )}
+
+          {reports.length > 0 ? (
+            <div className="border-t border-border pt-5">
+              <Small className="uppercase tracking-[0.18em] text-primary">
+                Saved report history
+              </Small>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {reports.map((savedReport) => (
+                  <Button
+                    key={savedReport.id}
+                    size="sm"
+                    variant={
+                      report?.id === savedReport.id ? "primary" : "outline"
+                    }
+                    onClick={() => setReport(savedReport)}
+                  >
+                    {dateTimeFormatter.format(savedReport.generatedAt)}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </CardContent>
       </Card>
     </section>

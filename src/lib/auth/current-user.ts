@@ -1,13 +1,18 @@
-import { cookies, headers } from "next/headers";
+import "server-only";
 
+import { getServerSession } from "next-auth/next";
+
+import { authOptions } from "@/lib/auth/options";
 import { prisma } from "@/lib/prisma";
 
+/**
+ * Resolves identity exclusively from Auth.js' server-validated database
+ * session. Never derive a user id from request headers, arbitrary cookies, or
+ * client input.
+ */
 export async function getCurrentUser() {
-  const cookieStore = await cookies();
-  const headerStore = await headers();
-  const userId =
-    cookieStore.get("mindpulse-user-id")?.value ??
-    headerStore.get("x-mindpulse-user-id");
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
 
   if (!userId) {
     return null;

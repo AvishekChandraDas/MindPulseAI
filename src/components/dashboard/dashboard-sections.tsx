@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { FadeIn, StaggerItem, StaggerList } from "@/components/motion";
 import {
@@ -12,12 +13,8 @@ import {
 } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
-import {
-  moodTrend,
-  quickActions,
-  recentActivity,
-  upcomingReminders,
-} from "./mock-data";
+import { moodTrend, quickActions } from "./mock-data";
+import type { DashboardActivity } from "@/server/queries/dashboard";
 
 function SectionHeading({
   id,
@@ -41,7 +38,17 @@ function SectionHeading({
   );
 }
 
-export function DashboardWelcomeCard() {
+export function DashboardWelcomeCard({
+  name,
+  completedAssessments,
+  moodEntries,
+  reminders,
+}: {
+  name: string | null;
+  completedAssessments: number;
+  moodEntries: number;
+  reminders: number;
+}) {
   return (
     <FadeIn>
       <Card className="overflow-hidden border-primary/15 bg-primary/5">
@@ -52,12 +59,11 @@ export function DashboardWelcomeCard() {
             </div>
             <div className="space-y-3">
               <H3 className="text-3xl sm:text-4xl">
-                You have a steady week so far.
+                {name ? `Welcome back, ${name}.` : "Welcome back."}
               </H3>
               <Text className="max-w-2xl text-muted-foreground">
-                This dashboard is intentionally mock-driven. It shows how the
-                future workspace can surface assessments, mood signals,
-                reminders, and activity without requiring any backend logic yet.
+                Your saved assessments, mood check-ins, reports, and reminders
+                are gathered here for a clear personal overview.
               </Text>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -78,9 +84,9 @@ export function DashboardWelcomeCard() {
 
           <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             {[
-              ["18", "completed assessments"],
-              ["9 day", "mood streak"],
-              ["3", "reminders pending"],
+              [String(completedAssessments), "completed assessments"],
+              [String(moodEntries), "recent mood entries"],
+              [String(reminders), "reminders pending"],
             ].map(([value, label]) => (
               <div
                 key={value}
@@ -106,7 +112,7 @@ export function QuickActions() {
         id="quick-actions-heading"
         eyebrow="Quick actions"
         title="Jump to the right part of the dashboard."
-        description="These links keep the UI useful even before business logic exists."
+        description="Move directly to the part of your dashboard you need."
       />
       <StaggerList className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {quickActions.map((action) => (
@@ -264,7 +270,7 @@ export function MoodSummaryCard() {
         id="mood-heading"
         eyebrow="Mood summary"
         title="A simple snapshot of how the week is trending."
-        description="The bars are intentionally lightweight and static, keeping the card readable at a glance."
+        description="A lightweight view of recent mood patterns."
       />
       <Card className="h-full">
         <CardContent className="space-y-6 p-6">
@@ -322,7 +328,11 @@ export function MoodSummaryCard() {
   );
 }
 
-export function RecentActivity() {
+export function RecentActivity({
+  activity,
+}: {
+  activity: DashboardActivity[];
+}) {
   return (
     <section
       id="activity"
@@ -333,41 +343,55 @@ export function RecentActivity() {
         id="activity-heading"
         eyebrow="Recent activity"
         title="What changed most recently."
-        description="A calm list keeps the activity feed readable without needing any fetched data."
+        description="Your latest saved activity, kept private to your account."
       />
       <Card>
         <CardContent className="space-y-4 p-6">
-          {recentActivity.map((item, index) => (
-            <div
-              key={item.title}
-              className={cn(
-                "flex gap-4 rounded-2xl p-4 transition-colors hover:bg-muted/40",
-                index !== recentActivity.length - 1 &&
-                  "border-b border-border/70 pb-5",
-              )}
-            >
-              <div className="mt-1 h-11 w-11 shrink-0 rounded-full bg-primary/10 text-center text-xs font-semibold leading-[2.75rem] text-primary">
-                {item.category.slice(0, 1)}
-              </div>
-              <div className="min-w-0 flex-1 space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <H3 className="text-base">{item.title}</H3>
-                  <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-                    {item.category}
-                  </span>
+          {activity.length === 0 ? (
+            <Text className="text-muted-foreground">
+              Your recent check-ins and reports will appear here.
+            </Text>
+          ) : (
+            activity.map((item, index) => (
+              <div
+                key={item.title}
+                className={cn(
+                  "flex gap-4 rounded-2xl p-4 transition-colors hover:bg-muted/40",
+                  index !== activity.length - 1 &&
+                    "border-b border-border/70 pb-5",
+                )}
+              >
+                <div className="mt-1 h-11 w-11 shrink-0 rounded-full bg-primary/10 text-center text-xs font-semibold leading-[2.75rem] text-primary">
+                  {item.category.slice(0, 1)}
                 </div>
-                <CardDescription>{item.detail}</CardDescription>
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <H3 className="text-base">{item.title}</H3>
+                    <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                      {item.category}
+                    </span>
+                  </div>
+                  <CardDescription>{item.detail}</CardDescription>
+                </div>
+                <time
+                  dateTime={item.occurredAt.toISOString()}
+                  className="whitespace-nowrap text-xs text-muted-foreground"
+                >
+                  {new Intl.DateTimeFormat("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  }).format(item.occurredAt)}
+                </time>
               </div>
-              <Small className="whitespace-nowrap">{item.time}</Small>
-            </div>
-          ))}
+            ))
+          )}
         </CardContent>
       </Card>
     </section>
   );
 }
 
-export function UpcomingReminders() {
+export function UpcomingReminders({ children }: { children: ReactNode }) {
   return (
     <section
       id="reminders"
@@ -378,30 +402,10 @@ export function UpcomingReminders() {
         id="reminders-heading"
         eyebrow="Upcoming reminders"
         title="What is due next."
-        description="These reminders keep the dashboard useful even before automation arrives."
+        description="Create and complete personal follow-ups for your account."
       />
       <Card>
-        <CardContent className="space-y-4 p-6">
-          {upcomingReminders.map((reminder) => (
-            <div
-              key={reminder.title}
-              className="rounded-2xl border border-border bg-background p-4"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <H3 className="text-base">{reminder.title}</H3>
-                  <CardDescription>{reminder.detail}</CardDescription>
-                </div>
-                <div className="text-right">
-                  <Small className="block text-primary">
-                    {reminder.priority}
-                  </Small>
-                  <Small>{reminder.due}</Small>
-                </div>
-              </div>
-            </div>
-          ))}
-        </CardContent>
+        <CardContent className="p-6">{children}</CardContent>
       </Card>
     </section>
   );

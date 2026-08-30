@@ -2,11 +2,13 @@
 
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Small, Text } from "@/components/ui/typography";
+import { SignOutButton } from "@/components/auth";
 import { cn } from "@/lib/utils";
 
 import { ProgressIndicator } from "./progress-indicator";
@@ -14,6 +16,11 @@ import { assessmentSteps, consentSummary } from "./mock-data";
 
 type AssessmentWorkspaceProps = {
   children: ReactNode;
+  user: {
+    name: string | null;
+    email: string;
+    image: string | null;
+  };
 };
 
 const stepIndexFromHash = (hash: string) =>
@@ -22,7 +29,10 @@ const stepIndexFromHash = (hash: string) =>
     assessmentSteps.findIndex((step) => step.href === hash),
   );
 
-export function AssessmentWorkspace({ children }: AssessmentWorkspaceProps) {
+export function AssessmentWorkspace({
+  children,
+  user,
+}: AssessmentWorkspaceProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeHash, setActiveHash] = useState("#consent");
 
@@ -73,6 +83,7 @@ export function AssessmentWorkspace({ children }: AssessmentWorkspaceProps) {
           <AssessmentTopbar
             onMenuClick={() => setMobileOpen(true)}
             currentIndex={currentIndex}
+            user={user}
           />
           <main
             id="dashboard-content"
@@ -195,11 +206,13 @@ function AssessmentSidebar({
 type AssessmentTopbarProps = {
   onMenuClick: () => void;
   currentIndex: number;
+  user: AssessmentWorkspaceProps["user"];
 };
 
 function AssessmentTopbar({
   onMenuClick,
   currentIndex,
+  user,
 }: AssessmentTopbarProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-border/80 bg-background/90 backdrop-blur">
@@ -235,9 +248,31 @@ function AssessmentTopbar({
             >
               Back to dashboard
             </Link>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-              AS
+            <div
+              className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-primary text-sm font-semibold text-primary-foreground"
+              aria-label={`${user.name || user.email} profile image`}
+              title={user.email}
+            >
+              {user.image ? (
+                <Image
+                  src={user.image}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                (user.name || user.email)
+                  .split(/\s+|@/)
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((part) => part[0])
+                  .join("")
+                  .toUpperCase()
+              )}
             </div>
+            <SignOutButton />
           </div>
         </div>
 

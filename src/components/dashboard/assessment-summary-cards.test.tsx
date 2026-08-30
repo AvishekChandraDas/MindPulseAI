@@ -40,8 +40,8 @@ describe("AssessmentSummaryCards", () => {
       />,
     );
 
-    expect(screen.getByText("7")).toBeTruthy();
-    expect(screen.getByText("5")).toBeTruthy();
+    expect(screen.getAllByText("7").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("5").length).toBeGreaterThan(0);
     expect(screen.getByText("LOW")).toBeTruthy();
   });
 });

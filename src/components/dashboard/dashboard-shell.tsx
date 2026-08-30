@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Small, Text } from "@/components/ui/typography";
+import { SignOutButton } from "@/components/auth";
 import { cn } from "@/lib/utils";
 
 import { AssessmentWorkspace } from "@/components/assessment";
@@ -16,9 +18,16 @@ import { dashboardNavItems } from "./mock-data";
 
 type DashboardShellProps = {
   children: ReactNode;
+  user: AuthenticatedUser;
 };
 
-export function DashboardShell({ children }: DashboardShellProps) {
+type AuthenticatedUser = {
+  name: string | null;
+  email: string;
+  image: string | null;
+};
+
+export function DashboardShell({ children, user }: DashboardShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeHash, setActiveHash] = useState("#overview");
@@ -55,7 +64,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }, [mobileOpen]);
 
   if (pathname.startsWith("/dashboard/assessment")) {
-    return <AssessmentWorkspace>{children}</AssessmentWorkspace>;
+    return <AssessmentWorkspace user={user}>{children}</AssessmentWorkspace>;
   }
 
   return (
@@ -69,7 +78,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <DashboardTopbar onMenuClick={() => setMobileOpen(true)} />
+          <DashboardTopbar
+            user={user}
+            onMenuClick={() => setMobileOpen(true)}
+          />
           <main
             id="dashboard-content"
             className="flex-1 px-4 py-6 sm:px-6 lg:px-8"
@@ -139,7 +151,7 @@ export function DashboardSidebar({
               Workspace status
             </Small>
             <Text className="font-medium text-foreground">
-              Calm, mock-driven dashboard shell
+              Private, account-based workspace
             </Text>
             <Small>Built for responsive navigation and fast scanning.</Small>
           </CardContent>
@@ -190,9 +202,24 @@ export function DashboardSidebar({
 
 type DashboardTopbarProps = {
   onMenuClick: () => void;
+  user: AuthenticatedUser;
 };
 
-export function DashboardTopbar({ onMenuClick }: DashboardTopbarProps) {
+function getInitials(name: string | null, email: string): string {
+  const words = (name ?? "").trim().split(/\s+/).filter(Boolean);
+
+  if (words.length > 0) {
+    return words
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase();
+  }
+
+  return email.slice(0, 2).toUpperCase();
+}
+
+export function DashboardTopbar({ onMenuClick, user }: DashboardTopbarProps) {
   const today = new Intl.DateTimeFormat("en-US", {
     weekday: "short",
     month: "short",
@@ -217,7 +244,7 @@ export function DashboardTopbar({ onMenuClick }: DashboardTopbarProps) {
           </Small>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-lg font-semibold tracking-tight sm:text-xl">
-              Welcome back, Sofia
+              Welcome back, {user.name?.trim() || user.email}
             </h1>
             <span className="rounded-full border border-border bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
               {today}
@@ -240,9 +267,33 @@ export function DashboardTopbar({ onMenuClick }: DashboardTopbarProps) {
           >
             View reminders
           </Link>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-            SA
+          <div className="hidden min-w-0 text-right sm:block">
+            <p className="truncate text-sm font-medium">
+              {user.name || user.email}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">
+              {user.email}
+            </p>
           </div>
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary text-sm font-semibold text-primary-foreground"
+            aria-label={`${user.name || user.email} profile image`}
+            title={user.email}
+          >
+            {user.image ? (
+              <Image
+                src={user.image}
+                alt=""
+                width={40}
+                height={40}
+                className="h-full w-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              getInitials(user.name, user.email)
+            )}
+          </div>
+          <SignOutButton />
         </div>
       </div>
     </header>
