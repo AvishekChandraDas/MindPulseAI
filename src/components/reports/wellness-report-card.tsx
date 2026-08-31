@@ -38,6 +38,7 @@ export function WellnessReportCard({
   );
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [geminiConsent, setGeminiConsent] = useState(false);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -138,7 +139,7 @@ export function WellnessReportCard({
             <Button
               type="button"
               isLoading={isGenerating}
-              disabled={isGenerating || isPending}
+              disabled={isGenerating || isPending || !geminiConsent}
               loadingLabel="Generating wellness report"
               onClick={handleGenerate}
             >
@@ -152,6 +153,20 @@ export function WellnessReportCard({
               and does not replace professional care.
             </Small>
           </div>
+
+          <label className="flex items-start gap-3 rounded-2xl border border-border bg-background p-4 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={geminiConsent}
+              onChange={(event) => setGeminiConsent(event.target.checked)}
+              className="mt-1 h-4 w-4"
+            />
+            <span>
+              I understand that my saved assessment and mood data will be sent
+              to Gemini to generate this report. Gemini&apos;s free tier may use
+              submitted content to improve Google products.
+            </span>
+          </label>
 
           {error ? (
             <Text role="alert" className="text-destructive">

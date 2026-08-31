@@ -41,9 +41,37 @@ export type WellnessReportGenerationResult =
   | { success: true; report: WellnessReportOutput }
   | { success: false; error: string };
 
-const openAiResponseSchema = z.object({
-  output_text: z.string().optional(),
+const geminiResponseSchema = z.object({
+  candidates: z
+    .array(
+      z.object({
+        content: z
+          .object({
+            parts: z.array(z.object({ text: z.string().optional() })),
+          })
+          .optional(),
+      }),
+    )
+    .optional(),
 });
+
+const wellnessReportJsonSchema = {
+  type: "object",
+  properties: {
+    assessmentResults: { type: "array", items: { type: "string" } },
+    moodPatterns: { type: "array", items: { type: "string" } },
+    wellnessObservations: { type: "array", items: { type: "string" } },
+    supportiveNextSteps: { type: "array", items: { type: "string" } },
+    disclaimer: { type: "string" },
+  },
+  required: [
+    "assessmentResults",
+    "moodPatterns",
+    "wellnessObservations",
+    "supportiveNextSteps",
+    "disclaimer",
+  ],
+} as const;
 
 const reportInstructions = `
 Create a concise, supportive wellness summary from the supplied structured data.
@@ -63,8 +91,9 @@ Return JSON only with these fields:
 `;
 
 /**
- * Assembles authenticated, existing wellness data for a future report generator.
- * This function does not generate a report or call an external AI provider.
+ * Assembles only the authenticated user's existing wellness data for report
+ * generation. No identity, email address, or authentication data is sent to
+ * Gemini.
  */
 export async function getWellnessReportInput(): Promise<WellnessReportInput | null> {
   const [{ user, assessments }, moodLogs] = await Promise.all([
@@ -108,7 +137,7 @@ function serializeReportInput(input: WellnessReportInput) {
 export async function generateWellnessReport(
   input: WellnessReportInput,
 ): Promise<WellnessReportGenerationResult> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
     return {
@@ -118,56 +147,32 @@ export async function generateWellnessReport(
   }
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_MODEL ?? "gpt-5-mini",
-        store: false,
-        instructions: reportInstructions,
-        input: JSON.stringify(serializeReportInput(input)),
-        text: {
-          format: {
-            type: "json_schema",
-            name: "wellness_report",
-            strict: true,
-            schema: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                assessmentResults: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-                moodPatterns: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-                wellnessObservations: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-                supportiveNextSteps: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-                disclaimer: { type: "string" },
-              },
-              required: [
-                "assessmentResults",
-                "moodPatterns",
-                "wellnessObservations",
-                "supportiveNextSteps",
-                "disclaimer",
-              ],
-            },
-          },
+    const model = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "x-goog-api-key": apiKey,
+          "Content-Type": "application/json",
         },
-      }),
-    });
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{ text: reportInstructions }],
+          },
+          contents: [
+            {
+              parts: [{ text: JSON.stringify(serializeReportInput(input)) }],
+            },
+          ],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseJsonSchema: wellnessReportJsonSchema,
+            maxOutputTokens: 900,
+          },
+        }),
+      },
+    );
 
     if (!response.ok) {
       return {
@@ -176,9 +181,12 @@ export async function generateWellnessReport(
       };
     }
 
-    const apiResponse = openAiResponseSchema.safeParse(await response.json());
+    const apiResponse = geminiResponseSchema.safeParse(await response.json());
+    const outputText = apiResponse.data?.candidates?.[0]?.content?.parts
+      .map((part) => part.text ?? "")
+      .join("");
 
-    if (!apiResponse.success || !apiResponse.data.output_text) {
+    if (!apiResponse.success || !outputText) {
       return {
         success: false,
         error: "Unable to generate a wellness report right now.",
@@ -186,7 +194,7 @@ export async function generateWellnessReport(
     }
 
     const reportContent = wellnessReportContentSchema.safeParse(
-      JSON.parse(apiResponse.data.output_text),
+      JSON.parse(outputText),
     );
 
     if (!reportContent.success) {

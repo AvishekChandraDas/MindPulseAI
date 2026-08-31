@@ -7,7 +7,7 @@ Educational mental wellness screening platform.
 - Next.js 15 (App Router)
 - React, TypeScript
 - Tailwind CSS
-- (Planned) Prisma, PostgreSQL, Auth.js, React Hook Form, Zod, OpenAI, Resend, Recharts, Framer Motion
+- Prisma, PostgreSQL, Auth.js, Zod, Gemini API, Recharts, Framer Motion
 
 ## Prerequisites
 
